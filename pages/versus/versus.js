@@ -44,17 +44,24 @@ Page({
   },
 
   /** 创建房间 */
-  onCreateRoom() {
+  async onCreateRoom() {
     // 先抽题，再把题目 id 传给服务端，保证双方看到同一道
     this.pickedId = null;
     this.loadQuestion();
+
+    // 必须等 openid 就绪，否则服务端无法区分房主与对手
+    const anonId = await this.getOpenid();
+    if (!anonId) {
+      wx.showToast({ title: '初始化失败，请稍后再试', icon: 'none' });
+      return;
+    }
 
     wx.showLoading({ title: '创建中' });
     wx.cloud.callFunction({
       name: 'versus-service',
       data: {
         action: 'create',
-        openid: this.getOpenid(),
+        openid: anonId,
         questionId: this.pickedId,
       },
     }).then((res) => {
@@ -92,10 +99,12 @@ Page({
 
   startPolling() {
     if (this.pollTimer) clearInterval(this.pollTimer);
-    this.pollTimer = setInterval(() => {
+    this.pollTimer = setInterval(async () => {
+      const anonId = await this.getOpenid();
+      if (!anonId) return;
       wx.cloud.callFunction({
         name: 'versus-service',
-        data: { action: 'poll', roomId: this.data.roomId, openid: this.getOpenid() },
+        data: { action: 'poll', roomId: this.data.roomId, openid: anonId },
       }).then((res) => {
         const r = res.result || {};
         if (r.opponentJoined && this.data.status === 'waiting') {
@@ -131,16 +140,22 @@ Page({
     this.setData({ myFallacy: e.currentTarget.dataset.key });
   },
 
-  onSubmit() {
+  async onSubmit() {
     const { question, myBreakpoint, myFallacy } = this.data;
     if (!myBreakpoint || !myFallacy) return;
+
+    const anonId = await this.getOpenid();
+    if (!anonId) {
+      wx.showToast({ title: '网络异常，请稍后再试', icon: 'none' });
+      return;
+    }
 
     wx.cloud.callFunction({
       name: 'versus-service',
       data: {
         action: 'answer',
         roomId: this.data.roomId,
-        openid: this.getOpenid(),
+        openid: anonId,
         questionId: question.id,
         breakpoint: {
           from: myBreakpoint,
@@ -155,11 +170,13 @@ Page({
   },
 
   /** 双方答案合并后才能交卷 —— 强制协作 */
-  checkMerged() {
+  async checkMerged() {
     if (!this.data.myAnswered) return;
+    const anonId = await this.getOpenid();
+    if (!anonId) return;
     wx.cloud.callFunction({
       name: 'versus-service',
-      data: { action: 'check', roomId: this.data.roomId, openid: this.getOpenid() },
+      data: { action: 'check', roomId: this.data.roomId, openid: anonId },
     }).then((res) => {
       const r = res.result || {};
       this.setData({
@@ -233,6 +250,10 @@ Page({
   },
 
   getOpenid() {
-    return app.globalData.openid || '';
+    // app.js 的 fetchOpenid 返回 Promise，确保拿到值再发请求
+    if (!app.globalData.openidPromise) {
+      app.globalData.openidPromise = app.fetchOpenid();
+    }
+    return app.globalData.openidPromise;
   },
 });

@@ -241,3 +241,22 @@
   color: #B4B2A9;
   margin-top: 24rpx;
 }
+
+/* 合规分享按钮 */
+.share-btn {
+  margin-top: 24rpx;
+  background: transparent;
+  border: 1rpx solid rgba(28, 28, 26, 0.2);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  width: 100%;
+}
+
+.share-btn::after {
+  border: none;
+}
+
+.share-btn-text {
+  font-size: 26rpx;
+  color: #1C1C1A;
+}

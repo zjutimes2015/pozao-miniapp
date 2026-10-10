@@ -25,7 +25,7 @@ Page({
     answeredCount: 0,
   },
 
-  onLoad() {
+  onLoad(query) {
     this.sessionAnswers = [];
     this.startedAt = Date.now();
     this.setData({
@@ -34,7 +34,25 @@ Page({
         .slice(0, 12)
         .map(f => ({ key: f.key, name: f.name, group: f.group })),
     });
-    this.loadLevel(1);
+
+    // 关卡解锁：读本地进度，首关永远开放
+    const passed = wx.getStorageSync('pz_solo_passed') || [];
+    const passedSet = new Set(passed);
+    this.setData({
+      levels: bank.levels.map(lv => ({
+        id: lv.id, name: lv.name, scene: lv.scene,
+        difficulty: lv.difficulty,
+        unlocked: lv.id === 1 || passedSet.has(lv.id - 1),
+        passed: passedSet.has(lv.id),
+      })),
+    });
+
+    // 支持从分享卡片进入：?from=PZ-XXXX
+    this.fromCode = query && query.from ? query.from : '';
+
+    // 跳到第一个未通过的关卡
+    const nextLevel = bank.levels.find(lv => !passedSet.has(lv.id));
+    this.loadLevel(nextLevel ? nextLevel.id : 5);
   },
 
   /** 加载关卡 */
@@ -110,6 +128,25 @@ Page({
     this.setData({ submitted: true, result, feedback: safeFeedback });
   },
 
+  /** 记录本关已通过（供解锁下一关） */
+  markLevelPassed(levelId) {
+    const passed = wx.getStorageSync('pz_solo_passed') || [];
+    if (!passed.includes(levelId)) {
+      passed.push(levelId);
+      wx.setStorageSync('pz_solo_passed', passed);
+    }
+    // 同步更新界面解锁态
+    const passedSet = new Set(passed);
+    this.setData({
+      levels: bank.levels.map(lv => ({
+        id: lv.id, name: lv.name, scene: lv.scene,
+        difficulty: lv.difficulty,
+        unlocked: lv.id === 1 || passedSet.has(lv.id - 1),
+        passed: passedSet.has(lv.id),
+      })),
+    });
+  },
+
   /** 下一题 / 下一关 */
   onNext() {
     const { currentQuestionIndex } = this.data;
@@ -124,7 +161,9 @@ Page({
       return;
     }
 
-    // 本关完成
+    // 本关完成 → 解锁下一关
+    this.markLevelPassed(this.data.currentLevelId);
+
     const nextLevelId = this.data.currentLevelId + 1;
     const hasNext = nextLevelId <= bank.levels.length;
 
@@ -136,6 +175,16 @@ Page({
       const count = app.finishSession();
       wx.redirectTo({ url: `/pages/fingerprint/fingerprint?total=${count}` });
     }
+  },
+
+  /** 微信转发入口 —— 合规分享 */
+  onShareAppMessage() {
+    const lv = bank.levels.find(l => l.id === this.data.currentLevelId);
+    return {
+      title: `第${this.data.currentLevelId}关「${lv ? lv.name : ''}」，你能找到那句话哪里说不通吗？`,
+      path: `/pages/solo/solo`,
+      imageUrl: '/assets/share-cover.png',
+    };
   },
 
   /** 退出确认 */

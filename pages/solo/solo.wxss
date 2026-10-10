@@ -201,3 +201,63 @@
   color: #B4B2A9;
   margin-top: 48rpx;
 }
+
+/* 关卡选择条 */
+.levels {
+  white-space: nowrap;
+  margin-bottom: 32rpx;
+}
+
+.level-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  border: 1rpx solid rgba(28, 28, 26, 0.12);
+  border-radius: 20rpx;
+  padding: 12rpx 24rpx;
+  margin-right: 16rpx;
+}
+
+.chip-active {
+  border-color: #1C1C1A;
+  background: #1C1C1A;
+}
+
+.chip-locked {
+  opacity: 0.35;
+}
+
+.chip-num {
+  font-size: 20rpx;
+  color: #8B8A85;
+}
+
+.chip-name {
+  font-size: 24rpx;
+  color: #1C1C1A;
+  white-space: nowrap;
+}
+
+.chip-active .chip-num,
+.chip-active .chip-name {
+  color: #FCFCFA;
+}
+
+/* 合规分享按钮 */
+.share-btn {
+  margin-top: 32rpx;
+  background: transparent;
+  border: 1rpx solid rgba(28, 28, 26, 0.2);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  width: 100%;
+}
+
+.share-btn::after {
+  border: none;
+}
+
+.share-btn-text {
+  font-size: 26rpx;
+  color: #1C1C1A;
+}

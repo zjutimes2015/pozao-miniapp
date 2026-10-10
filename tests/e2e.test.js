@@ -202,8 +202,10 @@ for (const f of scanSource()) {
   const text = fs.readFileSync(f, 'utf8');
   text.split('\n').forEach((line, idx) => {
     const trimmed = line.trim();
-    // 排除注释行：合规声明本身会提到这些词，不是违规设计
+    // 排除注释：合规声明本身会提到这些词，不是违规设计
+    //   // x   · * x   · <!-- x -->   · /* x */
     if (trimmed.startsWith('*') || trimmed.startsWith('//') || trimmed.startsWith('/*')) return;
+    if (trimmed.startsWith('<!--') || trimmed.endsWith('-->')) return;
     // 排除提审话术模板：那是给审核看的说明文档
     if (f.includes('compliance.js')) return;
     for (const re of ILLEGAL_PATTERNS) {
@@ -227,6 +229,7 @@ for (const f of scanSource()) {
   text.split('\n').forEach((line, idx) => {
     const trimmed = line.trim();
     if (trimmed.startsWith('*') || trimmed.startsWith('//') || trimmed.startsWith('/*')) return;
+    if (trimmed.startsWith('<!--') || trimmed.endsWith('-->')) return;
     if (path.basename(f) === 'compliance.js') return;
     const r = compliance.checkText(line);
     if (!r.safe) {
@@ -285,6 +288,51 @@ ok('训练页接入全题库', trainJs.includes('rotationBank') && trainJs.inclu
 ok('训练页按 qid 去重', trainJs.includes('answeredIds') && trainJs.includes('qid'));
 // 对攻页必须随机抽题，避免每次同一道
 ok('对攻页随机抽题', versusJs.includes('Math.random') && versusJs.includes('pickedId'));
+
+console.log('\n═══ 5c. 基础设施缺口（真机才会暴露） ═══\n');
+
+const appJs = fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8');
+
+// app.js 必须初始化云开发，否则所有 callFunction 真机直接报错
+ok('app.js 初始化 wx.cloud', appJs.includes('wx.cloud.init'));
+ok('云开发初始化含 traceUser: false', /traceUser:\s*false/.test(appJs));
+
+// openid 必须有真实来源，且对攻页必须 await
+ok('app.js 提供匿名标识获取', appJs.includes('fetchOpenid'));
+ok('对攻页 await 匿名标识', /await this\.getOpenid\(\)/.test(versusJs));
+ok('对攻页无未 await 的 getOpenid 调用',
+  !/openid:\s*this\.getOpenid\(\)/.test(versusJs),
+  'openid 传 Promise 会变成 [object Promise]');
+
+// identity 云函数必须存在，且不落库
+const identityPath = path.join(__dirname, '..', 'cloudfunctions', 'identity', 'index.js');
+ok('identity 云函数存在', fs.existsSync(identityPath));
+if (fs.existsSync(identityPath)) {
+  const identityJs = fs.readFileSync(identityPath, 'utf8');
+  ok('identity 不落库', !identityJs.includes('collection('),
+    '匿名标识不应写入数据库');
+  ok('identity 不返回 openid',
+    !/openid\s*:/.test(identityJs), '不应把 openid 返回给客户端');
+}
+
+// 分享入口必须用原生 open-type="share"
+const soloWxml = fs.readFileSync(path.join(__dirname, '..', 'pages', 'solo', 'solo.wxml'), 'utf8');
+const fpWxml = fs.readFileSync(path.join(__dirname, '..', 'pages', 'fingerprint', 'fingerprint.wxml'), 'utf8');
+ok('solo 页有原生分享按钮', soloWxml.includes('open-type="share"'));
+ok('指纹页有原生分享按钮', fpWxml.includes('open-type="share"'));
+ok('分享未绑定 bindtap 转发（无效写法）',
+  !/bindtap="onShareAppMessage"/.test(soloWxml + fpWxml),
+  '微信只认 open-type="share"，bindtap 无效');
+ok('solo 页实现 onShareAppMessage', soloJs.includes('onShareAppMessage'));
+
+// 卡片生成必须有 canvas 绘制（不能只靠云函数）
+ok('指纹页本地绘制卡片', /createSelectorQuery/.test(
+  fs.readFileSync(path.join(__dirname, '..', 'pages', 'fingerprint', 'fingerprint.js'), 'utf8')));
+ok('指纹页模板含离屏 canvas', fpWxml.includes('id="pzCard"'));
+
+// 关卡解锁必须有真实推进逻辑
+ok('solo 页记录关卡通过', soloJs.includes('pz_solo_passed'));
+ok('solo 页解锁态随进度更新', soloJs.includes('markLevelPassed'));
 
 ok('首测流程无广告位（3.2.2）', true, 'solo 页无 ad 组件');
 ok('未要求注册', true, 'app.js loadLogs 纯本地');

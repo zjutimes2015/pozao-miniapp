@@ -12,19 +12,29 @@ const { DISCLAIMER } = require('./utils/compliance.js');
 
 App({
   globalData: {
-    // 答题日志（本地存储，是刻度与指纹的唯一数据源）
     logs: [],
-    // 当前会话
     session: null,
-    // 指纹缓存
     fingerprint: null,
-    // 免责声明（结果页必须展示）
     disclaimer: DISCLAIMER,
+    openid: '',
+    cloudReady: false,
   },
 
   onLaunch() {
+    // 云开发必须在任何 callFunction 之前初始化，否则真机直接报错
+    if (!wx.cloud) {
+      console.error('[app] 当前基础库不支持云开发，对攻与卡片功能不可用');
+    } else {
+      wx.cloud.init({
+        env: 'YOUR_ENV_ID',   // ← 部署时替换为你的云开发环境 ID
+        traceUser: false,     // 不上报用户轨迹，符合「零采集」定位
+      });
+      this.globalData.cloudReady = true;
+    }
+
     this.loadLogs();
-    // 隐私授权：若用户未同意，不采集任何信息，仅本地运行
+    this.fetchOpenid();
+
     if (wx.getPrivacySetting) {
       wx.getPrivacySetting({
         onSuccess: (res) => {
@@ -32,6 +42,45 @@ App({
         },
       });
     }
+  },
+
+  /**
+   * 获取 openid —— 对攻房间用它区分房主与对手
+   *
+   * 设计取舍：为了「不采集用户信息」，这里不申请用户身份授权，
+   * 而是由云函数返回一个**匿名房间标识**用于房间归属判定。
+   * openid 只在服务端内存中作为房间归属标记，不落库、不出库。
+   */
+  fetchOpenid() {
+    return new Promise((resolve) => {
+      if (!this.globalData.cloudReady) {
+        // 云开发不可用时用本地随机 id，保证单机可玩
+        let localId = wx.getStorageSync('pz_local_id');
+        if (!localId) {
+          localId = 'L' + Math.random().toString(36).slice(2, 10);
+          wx.setStorageSync('pz_local_id', localId);
+        }
+        this.globalData.openid = localId;
+        return resolve(localId);
+      }
+
+      wx.cloud.callFunction({
+        name: 'identity',
+        data: {},
+      }).then((res) => {
+        const id = (res.result && res.result.anonId) || '';
+        this.globalData.openid = id;
+        resolve(id);
+      }).catch(() => {
+        let localId = wx.getStorageSync('pz_local_id');
+        if (!localId) {
+          localId = 'L' + Math.random().toString(36).slice(2, 10);
+          wx.setStorageSync('pz_local_id', localId);
+        }
+        this.globalData.openid = localId;
+        resolve(localId);
+      });
+    });
   },
 
   /** 读取本地答题日志 */

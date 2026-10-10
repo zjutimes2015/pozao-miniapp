@@ -1,5 +1,14 @@
 <view class="page">
-  <view class="progress-bar">
+  <!-- 关卡选择条 -->
+  <scroll-view class="levels" scroll-x="{{true}}">
+    <view class="level-chip {{currentLevelId === item.id ? 'chip-active' : ''}} {{item.unlocked ? '' : 'chip-locked'}}"
+          wx:for="{{levels}}" wx:key="id">
+      <text class="chip-num">{{item.id}}</text>
+      <text class="chip-name">{{item.name}}</text>
+    </view>
+  </scroll-view>
+
+  <view class="progress-bar" wx:if="{{currentQuestion}}">
     <text class="progress-text">{{progressText}}</text>
     <text class="progress-count">{{answeredCount}}</text>
   </view>
@@ -70,4 +79,9 @@
   </view>
 
   <view class="exit" bindtap="onExit">退出本轮</view>
+
+  <!-- 合规分享入口：原生转发按钮，不设奖励、不解锁内容（3.2.1） -->
+  <button class="share-btn" open-type="share">
+    <text class="share-btn-text">把题目发给朋友 ›</text>
+  </button>
 </view>

@@ -85,4 +85,14 @@
   </view>
 
   <view class="hint-line" wx:if="{{!enough}}">闯完 3 关以上会显示完整指纹</view>
+
+  <!-- 合规分享入口：原生转发按钮，不设奖励、不解锁内容（3.2.1） -->
+  <button class="share-btn" open-type="share" wx:if="{{enough}}">
+    <text class="share-btn-text">发给朋友 ›</text>
+  </button>
+
+  <!-- 离屏 canvas：用于本地绘制分享卡片，不依赖云函数 -->
+  <canvas type="2d" id="pzCard"
+          style="position: fixed; left: -9999px; top: 0; width: 340px; height: 460px;">
+  </canvas>
 </view>

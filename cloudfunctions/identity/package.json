@@ -1,0 +1,9 @@
+{
+  "name": "identity",
+  "version": "1.0.0",
+  "description": "返回匿名标识，用于对攻房间归属判定（不收集用户身份）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
