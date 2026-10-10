@@ -1,0 +1,88 @@
+<view class="page">
+  <view class="header">
+    <text class="title">你的论证指纹</text>
+    <view class="code-box" wx:if="{{code}}">
+      <text class="code">{{code}}</text>
+    </view>
+  </view>
+
+  <view class="sample-note" wx:if="{{!enough}}">{{sampleNote}}</view>
+
+  <!-- 主榜：分组聚合 -->
+  <view class="section" wx:if="{{groupList.length}}">
+    <text class="section-title">你的表现结构</text>
+    <view class="group-item" wx:for="{{groupList}}" wx:key="name">
+      <view class="group-head">
+        <text class="group-name">{{item.name}}</text>
+        <text class="group-conf">{{item.confidence}}置信 · {{item.total}} 题</text>
+      </view>
+      <view class="group-desc">{{item.desc}}</view>
+      <view class="group-bars">
+        <view class="bar-line">
+          <text class="bar-label">容易犯</text>
+          <view class="bar-track">
+            <view class="bar-fill bar-warn" style="width: {{item.fallRate}}%"></view>
+          </view>
+          <text class="bar-rate">{{item.fallRate}}%</text>
+        </view>
+        <view class="bar-line">
+          <text class="bar-label">能抓出</text>
+          <view class="bar-track">
+            <view class="bar-fill bar-strong" style="width: {{item.catchRate}}%"></view>
+          </view>
+          <text class="bar-rate">{{item.catchRate}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 副榜：单维薄弱 -->
+  <view class="section" wx:if="{{fall.length}}">
+    <text class="section-title">最容易被你用出来的破绽</text>
+    <view class="item" wx:for="{{fall}}" wx:key="name">
+      <text class="item-name">{{item.name}}</text>
+      <view class="bar-track">
+        <view class="bar-fill bar-warn" style="width: {{item.rate}}%"></view>
+      </view>
+      <text class="item-rate">{{item.rate}}%</text>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{catch.length}}">
+    <text class="section-title">你最擅长的抓漏洞</text>
+    <view class="item" wx:for="{{catch}}" wx:key="name">
+      <text class="item-name">{{item.name}}</text>
+      <view class="bar-track">
+        <view class="bar-fill bar-strong" style="width: {{item.rate}}%"></view>
+      </view>
+      <text class="item-rate">{{item.rate}}%</text>
+    </view>
+  </view>
+
+  <!-- 场合敏感度：Brilliant 与 MBTI 均无此维度 -->
+  <view class="section" wx:if="{{sceneList.length}}">
+    <text class="section-title">你最容易失守的场合</text>
+    <view class="scene-item" wx:for="{{sceneList}}" wx:key="scene">
+      <view class="scene-dot"></view>
+      <text class="scene-text">{{item.scene}}</text>
+    </view>
+  </view>
+
+  <view class="pattern" wx:if="{{pattern}}">
+    <text class="pattern-text">{{pattern}}</text>
+  </view>
+
+  <view class="disclaimer">{{disclaimer}}</view>
+
+  <view class="stats">
+    <text class="stat-text">已完成 {{levelsDone}} 关 · 共作答 {{totalAnswers}} 题</text>
+  </view>
+
+  <view class="actions" wx:if="{{enough}}">
+    <button class="btn-primary" bindtap="onGenerateCard">生成卡片</button>
+    <button class="btn-secondary" bindtap="onVersus">发起对攻</button>
+    <button class="btn-ghost" bindtap="onTrain">继续训练</button>
+  </view>
+
+  <view class="hint-line" wx:if="{{!enough}}">闯完 3 关以上会显示完整指纹</view>
+</view>

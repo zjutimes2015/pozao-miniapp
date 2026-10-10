@@ -1,0 +1,46 @@
+<view class="page">
+  <view class="header">
+    <text class="title">我的</text>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat">
+      <text class="stat-num">{{totalAnswers}}</text>
+      <text class="stat-label">累计答题</text>
+    </view>
+    <view class="stat">
+      <text class="stat-num">0</text>
+      <text class="stat-label">注册</text>
+    </view>
+  </view>
+
+  <view class="info-block">
+    <text class="info-title">关于这个工具</text>
+    <text class="info-text">这是一个逻辑推理能力测评工具。每道题都有唯一正确答案，结果只反映你当前的答题表现，不预测任何未来表现。</text>
+    <text class="info-text">我们不收集你的出生日期、姓名、性别或手机号。全部数据只保存在你的设备上。</text>
+  </view>
+
+  <view class="disclaimer-block">
+    <text class="disclaimer-label">说明</text>
+    <text class="disclaimer-text">{{disclaimer}}</text>
+  </view>
+
+  <view class="menu">
+    <view class="menu-item" bindtap="onAbout">
+      <text class="menu-text">关于与数据说明</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="onShowReviewNote">
+      <text class="menu-text">审核合规说明</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item menu-danger" bindtap="onClearData">
+      <text class="menu-text menu-text-danger">清空全部数据</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="review-note" wx:if="{{showReviewNote}}">
+    <text class="review-text">{{reviewNote}}</text>
+  </view>
+</view>

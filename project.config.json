@@ -1,0 +1,20 @@
+{
+  "description": "破招 · 论证拆招（逻辑推理能力测评）",
+  "miniprogramRoot": "./",
+  "cloudfunctionRoot": "./cloudfunctions/",
+  "compileType": "miniprogram",
+  "appid": "wx010e0cd569461730",
+  "projectname": "pozao",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false,
+    "coverView": true,
+    "checkInvalidKey": true,
+    "uploadWithSourceMap": true
+  },
+  "libVersion": "3.0.0",
+  "condition": {}
+}

@@ -1,0 +1,84 @@
+<view class="page">
+  <!-- 空闲：创建房间 -->
+  <view wx:if="{{status === 'idle'}}" class="state-box">
+    <text class="state-title">同题对攻</text>
+    <text class="state-desc">两个人拆同一段话，合并答案后才能交卷。谁抓到的断点更准，谁赢。</text>
+    <text class="state-desc state-desc-strong">无论输赢，你都会看到对方是怎么想的。</text>
+    <button class="btn-primary" bindtap="onCreateRoom">创建房间</button>
+  </view>
+
+  <!-- 等待对手 -->
+  <view wx:if="{{status === 'waiting'}}" class="state-box">
+    <text class="state-title">等对手加入</text>
+    <text class="state-room">房间号 {{roomId}}</text>
+    <text class="state-desc">把这个房间号发给好友，或者分享卡片邀请他。</text>
+    <button class="btn-secondary" bindtap="inviteOpponent">发给好友</button>
+  </view>
+
+  <!-- 对战中 -->
+  <view wx:if="{{status === 'ready'}}">
+    <view class="progress-row">
+      <text class="progress-text">房间 {{roomId}}</text>
+      <text class="progress-status">{{myAnswered ? '已提交' : '轮到你'}}</text>
+    </view>
+
+    <view class="text-block">{{question.text}}</view>
+
+    <view class="cards">
+      <view
+        wx:for="{{question.cards}}"
+        wx:key="id"
+        class="card {{myBreakpoint === item.id ? 'card-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCardTap"
+      >
+        <view class="card-type">{{item.type === 'premise' ? '前提' : '结论'}}</view>
+        <view class="card-text">{{item.text}}</view>
+      </view>
+    </view>
+
+    <view class="merge-status" wx:if="{{myAnswered}}">
+      <view class="merge-item {{mergedComplete ? 'merge-done' : ''}}">
+        <text>我的断点 {{myAnswered ? '已提交' : '未提交'}}</text>
+      </view>
+      <view class="merge-item {{opponentAnswered ? 'merge-done' : ''}}">
+        <text>对手断点 {{opponentAnswered ? '已提交' : '未提交'}}</text>
+      </view>
+    </view>
+    <view class="merge-tip" wx:if="{{myAnswered && !mergedComplete}}">
+      双方都提交后才会结算 —— 这是为了让你看到对方的思路
+    </view>
+
+    <button wx:if="{{!myAnswered}}" class="btn-primary {{myBreakpoint ? '' : 'btn-disabled'}}" bindtap="onSubmit">
+      提交我的断点
+    </button>
+  </view>
+
+  <!-- 结算 -->
+  <view wx:if="{{status === 'finished'}}" class="state-box">
+    <text class="state-title">{{result.verdict}}</text>
+
+    <view class="result-block">
+      <view class="result-row">
+        <text class="result-label">你</text>
+        <text class="result-value {{result.iFoundIt ? 'val-right' : 'val-miss'}}">
+          {{result.iFoundIt ? '抓到了' : '没抓到'}}
+        </text>
+      </view>
+      <view class="result-row">
+        <text class="result-label">对手</text>
+        <text class="result-value {{result.oppFoundIt ? 'val-right' : 'val-miss'}}">
+          {{result.oppFoundIt ? '抓到了' : '没抓到'}}
+        </text>
+      </view>
+    </view>
+
+    <view class="truth">
+      <view class="truth-label">正确断点</view>
+      <view class="truth-text">{{result.rightFrom}} → {{result.rightFallacy}}</view>
+      <view class="truth-text truth-body">{{result.truth}}</view>
+    </view>
+
+    <button class="btn-secondary" bindtap="onAgain">再来一局</button>
+  </view>
+</view>

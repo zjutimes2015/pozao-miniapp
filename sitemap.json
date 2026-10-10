@@ -1,0 +1,1 @@
+{ "desc": "逻辑推理能力测评工具，不收集任何个人信息", "rules": [{ "action": "disallow", "page": "*" }] }

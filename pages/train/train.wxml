@@ -1,0 +1,92 @@
+<view class="page">
+  <!-- 今日概览 -->
+  <view class="header">
+    <view class="today-row">
+      <text class="today-label">今日</text>
+      <text class="today-count">{{todayDone}} / {{todayTarget}}</text>
+    </view>
+    <view class="streak-row">
+      <text class="streak-num">{{streak}}</text>
+      <text class="streak-label">天连续</text>
+      <text class="streak-safe" wx:if="{{streakProtected}}">·漏一天不影响，继续就恢复</text>
+    </view>
+  </view>
+
+  <!-- 训练入口 -->
+  <view class="start-card" wx:if="{{!started && todayDone < todayTarget}}">
+    <text class="start-title">今日三题</text>
+    <text class="start-desc">优先练你最容易掉进去的那几类。三题大约两分钟。</text>
+    <button class="btn-primary" bindtap="onStart">开始</button>
+  </view>
+
+  <view class="done-card" wx:if="{{!started && todayDone >= todayTarget}}">
+    <text class="done-text">今天的三题已完成。</text>
+    <text class="done-sub">明天再来，或者去闯新的关卡。</text>
+  </view>
+
+  <!-- 答题区 -->
+  <view wx:if="{{started && currentQuestion}}">
+    <view class="progress-row">
+      <text class="progress-text">第 {{currentIndex + 1}} / {{todayTarget}} 题</text>
+    </view>
+
+    <view class="text-block">{{currentQuestion.text}}</view>
+
+    <view class="cards">
+      <view
+        wx:for="{{currentQuestion.cards}}"
+        wx:key="id"
+        class="card {{selectedFrom === item.id ? 'card-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCardTap"
+      >
+        <view class="card-type">{{item.type === 'premise' ? '前提' : '结论'}}</view>
+        <view class="card-text">{{item.text}}</view>
+      </view>
+    </view>
+
+    <view class="weak-hint" wx:if="{{!submitted}}">
+      <text class="weak-hint-label">这题练的是</text>
+      <text class="weak-hint-name">{{currentQuestion.fallacyKey}}</text>
+    </view>
+
+    <button wx:if="{{!submitted}}" class="btn-primary {{selectedFrom ? '' : 'btn-disabled'}}" bindtap="onSubmit">提交</button>
+
+    <view class="feedback" wx:if="{{submitted}}">
+      <view class="feedback-text">{{feedback.text}}</view>
+      <view class="truth" wx:if="{{!result.correct}}">
+        <view class="truth-text">{{currentQuestion.groundTruth}}</view>
+      </view>
+      <button class="btn-primary" bindtap="onNext">
+        {{currentIndex + 1 < todayTarget ? '下一题' : '完成'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 能力概览：不做进度条，只做刻度列表 -->
+  <view class="section" wx:if="{{!started && weakList.length}}">
+    <text class="section-title">当前短板</text>
+    <view class="item" wx:for="{{weakList}}" wx:key="name">
+      <text class="item-name">{{item.name}}</text>
+      <view class="bar-track">
+        <view class="bar-fill bar-warn" style="width: {{item.rate}}%"></view>
+      </view>
+      <text class="item-rate">{{item.rate}}%</text>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{!started && strongList.length}}">
+    <text class="section-title">当前强项</text>
+    <view class="item" wx:for="{{strongList}}" wx:key="name">
+      <text class="item-name">{{item.name}}</text>
+      <view class="bar-track">
+        <view class="bar-fill bar-strong" style="width: {{item.rate}}%"></view>
+      </view>
+      <text class="item-rate">{{item.rate}}%</text>
+    </view>
+  </view>
+
+  <view class="pattern" wx:if="{{!started && pattern}}">
+    <text class="pattern-text">{{pattern}}</text>
+  </view>
+</view>

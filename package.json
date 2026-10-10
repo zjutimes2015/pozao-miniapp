@@ -1,0 +1,14 @@
+{
+  "name": "pozao-miniapp",
+  "version": "0.1.0",
+  "description": "破招 · 论证拆招 —— 逻辑推理能力测评小程序",
+  "private": true,
+  "scripts": {
+    "test": "node tests/engine.test.js && node tools/validate-bank.js && node tests/e2e.test.js",
+    "test:engine": "node tests/engine.test.js",
+    "test:bank": "node tools/validate-bank.js",
+    "test:e2e": "node tests/e2e.test.js",
+    "icons": "python tools/gen_icons.py"
+  },
+  "license": "MIT"
+}

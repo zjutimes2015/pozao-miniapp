@@ -1,0 +1,9 @@
+{
+  "name": "generate-card",
+  "version": "1.0.0",
+  "description": "生成可分享的论证指纹卡片",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

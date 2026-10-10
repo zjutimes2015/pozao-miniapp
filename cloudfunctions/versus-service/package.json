@@ -1,0 +1,9 @@
+{
+  "name": "versus-service",
+  "version": "1.0.0",
+  "description": "同题对攻房间服务（含限流保护）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

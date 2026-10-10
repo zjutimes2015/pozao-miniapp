@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/solo/solo",
+    "pages/fingerprint/fingerprint",
+    "pages/versus/versus",
+    "pages/train/train",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FCFCFA",
+    "navigationBarTitleText": "破招",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FCFCFA",
+    "usePrivacyCheck": true
+  },
+  "tabBar": {
+    "color": "#8B8A85",
+    "selectedColor": "#1C1C1A",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/solo/solo",
+        "text": "单闯",
+        "iconPath": "assets/icons/solo.png",
+        "selectedIconPath": "assets/icons/solo-active.png"
+      },
+      {
+        "pagePath": "pages/versus/versus",
+        "text": "对攻",
+        "iconPath": "assets/icons/versus.png",
+        "selectedIconPath": "assets/icons/versus-active.png"
+      },
+      {
+        "pagePath": "pages/train/train",
+        "text": "训练",
+        "iconPath": "assets/icons/train.png",
+        "selectedIconPath": "assets/icons/train-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "permission": {},
+  "requiredPrivateInfos": []
+}
