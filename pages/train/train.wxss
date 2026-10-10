@@ -147,6 +147,43 @@
   color: #185FA5;
 }
 
+/* 谬误选项 */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.option {
+  border: 1rpx solid rgba(28, 28, 26, 0.12);
+  border-radius: 20rpx;
+  padding: 14rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.option-active {
+  border-color: #1C1C1A;
+  background: #1C1C1A;
+}
+
+.option-active .option-name,
+.option-active .option-group {
+  color: #FCFCFA;
+}
+
+.option-name {
+  font-size: 26rpx;
+  color: #1C1C1A;
+}
+
+.option-group {
+  font-size: 20rpx;
+  color: #8B8A85;
+}
+
 .btn-primary {
   background: #1C1C1A;
   color: #FCFCFA;

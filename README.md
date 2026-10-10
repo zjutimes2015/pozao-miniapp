@@ -15,11 +15,12 @@
 # 3. 云开发环境需自行创建，然后右键 cloudfunctions/* 上传部署
 
 # 本地无需依赖即可运行测试
-node tests/engine.test.js      # 引擎正确性（52 项）
-node tools/validate-bank.js    # 题库合规校验（24 项）
-node tests/e2e.test.js# 端到端流程（23 项）
+npm test                      # 三套全跑
+node tests/engine.test.js     # 引擎正确性（52 项）
+node tools/validate-bank.js   # 题库合规与结构（70 项）
+node tests/e2e.test.js        # 端到端流程 + 合规扫描（31 项）
 
-node tools/gen_icons.py        # 重新生成 TabBar 图标（需 Python）
+python tools/gen_icons.py     # 重新生成 TabBar 图标
 ```
 
 ---
@@ -28,30 +29,74 @@ node tools/gen_icons.py        # 重新生成 TabBar 图标（需 Python）
 
 ```
 pozao-miniapp/
-├── app.js # 全局状态：日志、指纹、会话
+├── app.js                     # 全局状态：日志、指纹、会话、连续天数
 ├── app.json                   # 页面与 TabBar 配置
 ├── sitemap.json               # disallow all（测评内容不索引）
 ├── utils/
 │   ├── compliance.js          # 合规过滤层 ← 生死线
 │   └── argue-engine.js        # 论证推理引擎 ← 核心资产
 ├── data/
-│   └── levels.js              # 叙事五关题库（15 题）
+│   ├── levels.js              # 叙事五关题库（15 题）
+│   ├── versus-bank.js         # 对攻题库（30 题）
+│   ├── rotation-bank.js       # 周轮换题库（20 题）
+│   └── bank-plan.js           # 题量分配方案与校验基准
 ├── pages/
 │   ├── solo/                  # 单闯（五关叙事拆招）
 │   ├── fingerprint/           # 论证指纹 + 生成卡片
-│   ├── versus/                # 同题对攻
-│   ├── train/                 # 训练层
+│   ├── versus/                # 同题对攻（30 题随机抽）
+│   ├── train/                 # 训练层（65 题池每日抽 3）
 │   └── profile/               # 我的 + 隐私
 ├── cloudfunctions/
 │   ├── generate-card/         # 卡片生成（含合规自检）
-│   └── versus-service/        # 对攻房间（含限流保护）
+│   └── versus-service/        # 对攻房间（限流 + 题目由客户端指定）
 ├── tools/
-│   ├── validate-bank.js       # 题库校验
+│   ├── validate-bank.js       # 题库校验（70 项）
 │   └── gen_icons.py           # 图标生成
 └── tests/
-    ├── engine.test.js
-    └── e2e.test.js
+    ├── engine.test.js         # 52 项
+    └── e2e.test.js            # 31 项
 ```
+
+---
+
+## 题库结构（65 题）
+
+| 题库 | 数量 | 用途 | 设计要求 |
+|---|---|---|---|
+| 叙事五关 | 15 | 首次体验，3-4 分钟 | 难度递增，有场景叙事 |
+| 对攻 | 30 | 双人同题 | 断点更隐蔽（why ≥40 字，便于讨论） |
+| 周轮换 | 20 | 训练层每日抽题 | 场景更日常（咖啡店、聊天、争论） |
+
+### 12 维分布
+
+```
+ 1. 肯定后件  形式  叙事2 对攻3 轮换2 = 7
+ 2. 否定前件  形式  叙事1 对攻3 轮换2 = 6
+ 3. 合成谬误  形式  叙事1 对攻3 轮换1 = 5
+ 4. 归谬      形式  叙事1 对攻3 轮换1 = 5
+ 5. 诉诸无知  论证  叙事1 对攻2 轮换2 = 5
+ 6. 诉诸权威  论证  叙事1 对攻2 轮换2 = 5
+ 7. 诉诸大众  论证  叙事1 对攻3 轮换1 = 5
+ 8. 诉诸情感  论证  叙事1 对攻2 轮换2 = 5
+ 9. 偷换概念  语义  叙事1 对攻3 轮换2 = 6
+10. 滑坡谬误  语义  叙事2 对攻2 轮换2 = 6
+11. 稻草人    语义  叙事1 对攻2 轮换1 = 4
+12. 归因谬误  语义  叙事2 对攻2 轮换2 = 6
+
+分组：形式 23 · 论证 20 · 语义 22（极差 3，保证聚合指纹均衡）
+```
+
+**每维至少 4 题**，超过 `minSamples=3` 的统计门槛。分组必须均衡，否则组聚合分数会失真。
+
+### 训练层抽题策略
+
+依据 Sailer & Homner (2020) 的交错练习结论：
+
+1. 优先补最弱**分组**（分组是主榜统计口径）
+2. 单维薄弱项优先
+3. 轮换题库优先（为每日新鲜感设计）
+4. **按 qid 去重**，已做过的题不重复出现
+5. 组间隔选取，避免三题都是同一类型
 
 ---
 
@@ -103,7 +148,15 @@ P→Q, ¬P ⟹ ¬Q    无效 ← 否定前件谬误
 
 每个谬误关联高频职场场景（诉诸大众↔跨部门对齐、归因谬误↔复盘归因）。
 
-**「在什么场合会失守」是数学训练（Brilliant）和人格测试（MBTI）都没有的东西。** Brilliant 官方 FAQ 承认它只教 specific, substantive knowledge。
+**「在什么场合会失守」是数学训练（Brilliant）和人格测试（MBTI）都没有的东西。** Brilliant官方 FAQ 承认它只教 specific, substantive knowledge。
+
+### 5. 谬误类型必须由用户自己选
+
+三个答题页面都要求用户**同时选择断点位置和谬误类型**。
+
+这不是多余的交互设计：如果系统代替用户选出谬误类型，用户永远答对，指纹与刻度全部失真——训练就变成了"看答案"。
+
+`tests/e2e.test.js` 有专门的回归检测，扫描页面代码里的「直接取正确答案」写法，防止将来被改回去。
 
 ---
 

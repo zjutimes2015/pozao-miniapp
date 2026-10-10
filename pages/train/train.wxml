@@ -45,12 +45,25 @@
       </view>
     </view>
 
-    <view class="weak-hint" wx:if="{{!submitted}}">
-      <text class="weak-hint-label">这题练的是</text>
-      <text class="weak-hint-name">{{currentQuestion.fallacyKey}}</text>
+    <view class="options" wx:if="{{!submitted}}">
+      <view
+        wx:for="{{fallacyOptions}}"
+        wx:key="key"
+        class="option {{selectedFallacy === item.key ? 'option-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onFallacyTap"
+      >
+        <text class="option-name">{{item.name}}</text>
+        <text class="option-group">{{item.group}}</text>
+      </view>
     </view>
 
-    <button wx:if="{{!submitted}}" class="btn-primary {{selectedFrom ? '' : 'btn-disabled'}}" bindtap="onSubmit">提交</button>
+    <view class="weak-hint" wx:if="{{!submitted}}">
+      <text class="weak-hint-label">这题练的是</text>
+      <text class="weak-hint-name">{{currentQuestion.scene}}</text>
+    </view>
+
+    <button wx:if="{{!submitted}}" class="btn-primary {{selectedFrom && selectedFallacy ? '' : 'btn-disabled'}}" bindtap="onSubmit">提交</button>
 
     <view class="feedback" wx:if="{{submitted}}">
       <view class="feedback-text">{{feedback.text}}</view>

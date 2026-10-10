@@ -48,7 +48,7 @@ exports.main = async (event) => {
   if (!checkRate(openid)) return { ok: false, reason: 'rate_limited' };
 
   switch (action) {
-    case 'create': return await createRoom(openid);
+    case 'create': return await createRoom(openid, event.questionId);
     case 'poll': return await pollRoom(roomId, openid);
     case 'answer': return await submitAnswer(roomId, openid, questionId, breakpoint);
     case 'check': return await checkMerged(roomId, openid);
@@ -56,7 +56,7 @@ exports.main = async (event) => {
   }
 };
 
-async function createRoom(openid) {
+async function createRoom(openid, questionId) {
   const roomId = Math.random().toString(36).slice(2, 8).toUpperCase();
 
   await db.collection('pz_rooms').doc(roomId).set({
@@ -67,7 +67,9 @@ async function createRoom(openid) {
       guestId: null,
       guestAnswered: false,
       guestBreakpoint: null,
-      questionId: 's3-01',
+      // 题目 id 由客户端创建房间时指定（从30 道对攻题中随机抽一道）
+      // 服务端不硬编码具体题目，否则会与客户端抽到的题目不一致
+      questionId: questionId || null,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     },

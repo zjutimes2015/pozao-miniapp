@@ -236,6 +236,56 @@ for (const f of scanSource()) {
 }
 ok('源码中无禁用词（3.2.4）', forbiddenHits.length === 0, forbiddenHits.join(' | '));
 
+console.log('\n═══ 5b. 防止「送答案」回归 ═══\n');
+
+// 反模式：把题目的正确答案直接作为「用户提交的值」
+// 只匹配作答对象与云函数参数，不匹配 addLog（那里记录答案是正确的）
+const ANSWER_LEAK_PATTERNS = [
+  /breakpointFrom:\s*(q|question|currentQuestion)\.breakpoint\.from/,
+  /breakpointTo:\s*(q|question|currentQuestion)\.breakpoint\.to/,
+  /breakpoint\s*:\s*\{[^}]*from:\s*(q|question)\.breakpoint\.from/,
+];
+
+let leaks = [];
+for (const f of scanSource()) {
+  const text = fs.readFileSync(f, 'utf8');
+  text.split('\n').forEach((line, idx) => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('*') || trimmed.startsWith('//') || trimmed.startsWith('/*')) return;
+    // 记录日志的 fallacyKey 是合法的：日志需要知道题目考什么
+    if (/addLog|fallacyKey:\s*q\.fallacyKey/.test(trimmed) && !/breakpoint/.test(trimmed)) return;
+    for (const re of ANSWER_LEAK_PATTERNS) {
+      if (re.test(line)) {
+        leaks.push(`${path.basename(f)}:${idx + 1} ${trimmed.slice(0, 55)}`);
+      }
+    }
+  });
+}
+ok('页面代码中无「直接取正确答案」写法', leaks.length === 0, leaks.join(' | '));
+
+// 读取三个页面的源码，做作答逻辑检查
+const soloJs = fs.readFileSync(path.join(__dirname, '..', 'pages', 'solo', 'solo.js'), 'utf8');
+const trainJs = fs.readFileSync(path.join(__dirname, '..', 'pages', 'train', 'train.js'), 'utf8');
+const versusJs = fs.readFileSync(path.join(__dirname, '..', 'pages', 'versus', 'versus.js'), 'utf8');
+
+// 逐页确认：作答对象的 fallacy 字段必须来自用户选择
+ok('单闯页作答取用户选择的谬误', /fallacyKey:\s*selectedFallacy/.test(soloJs),
+  '应使用 selectedFallacy 而非题目的 fallacyKey');
+ok('训练页作答取用户选择的谬误', /fallacyKey:\s*selectedFallacy/.test(trainJs));
+ok('对攻页作答取用户选择的谬误', /fallacy:\s*myFallacy/.test(versusJs));
+
+// 单闯页与训练页都必须有谬误选择逻辑
+ok('单闯页有谬误选择', soloJs.includes('onFallacyTap'));
+ok('训练页有谬误选择', trainJs.includes('onFallacyTap'));
+ok('对攻页有谬误选择', versusJs.includes('onFallacyTap'));
+
+// 训练页必须从 65 题池抽题，而不是只用 15 题
+ok('训练页接入全题库', trainJs.includes('rotationBank') && trainJs.includes('versusBank'));
+// 训练页必须按 qid 去重，保证「每日不重复」
+ok('训练页按 qid 去重', trainJs.includes('answeredIds') && trainJs.includes('qid'));
+// 对攻页必须随机抽题，避免每次同一道
+ok('对攻页随机抽题', versusJs.includes('Math.random') && versusJs.includes('pickedId'));
+
 ok('首测流程无广告位（3.2.2）', true, 'solo 页无 ad 组件');
 ok('未要求注册', true, 'app.js loadLogs 纯本地');
 ok('未收集手机号', true, 'app.json requiredPrivateInfos 为空');

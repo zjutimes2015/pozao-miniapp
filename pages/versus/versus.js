@@ -7,7 +7,9 @@
  */
 
 const app = getApp();
-const bank = require('../../data/levels.js');
+const soloBank = require('../../data/levels.js');
+const versusBank = require('../../data/versus-bank.js');
+const { FALLACIES } = require('../../utils/argue-engine.js');
 
 Page({
   data: {
@@ -22,11 +24,19 @@ Page({
     opponentAnswered: false,
     result: null,
     mergedComplete: false,
+    myFallacy: null,
+    fallacyOptions: [],
   },
 
   onLoad(query) {
     this.setData({ code: query.code || '' });
     this.pollTimer = null;
+    // 谬误选项：与单闯页保持一致
+    this.setData({
+      fallacyOptions: Object.values(FALLACIES).map(f => ({
+        key: f.key, name: f.name, group: f.group,
+      })),
+    });
   },
 
   onUnload() {
@@ -35,10 +45,18 @@ Page({
 
   /** 创建房间 */
   onCreateRoom() {
+    // 先抽题，再把题目 id 传给服务端，保证双方看到同一道
+    this.pickedId = null;
+    this.loadQuestion();
+
     wx.showLoading({ title: '创建中' });
     wx.cloud.callFunction({
       name: 'versus-service',
-      data: { action: 'create', openid: this.getOpenid() },
+      data: {
+        action: 'create',
+        openid: this.getOpenid(),
+        questionId: this.pickedId,
+      },
     }).then((res) => {
       wx.hideLoading();
       const roomId = res.result && res.result.roomId;
@@ -91,7 +109,14 @@ Page({
   },
 
   loadQuestion() {
-    const q = bank.levels[2].questions[0]; // 对攻题库固定入口
+    // 从 30 道对攻题中随机抽一道，双方看到同一道
+    // 避免每次都是同一道题（用户会背答案）
+    if (!this.pickedId) {
+      const pool = versusBank.questions;
+      this.pickedId = pool[Math.floor(Math.random() * pool.length)].id;
+    }
+    const q = versusBank.questions.find(x => x.id === this.pickedId)
+      || versusBank.questions[0];
     this.setData({ question: q });
   },
 
@@ -100,9 +125,15 @@ Page({
     this.setData({ myBreakpoint: e.currentTarget.dataset.id });
   },
 
+  /** 选择谬误类型 —— 必须由用户作答，不能把正确答案传给后端 */
+  onFallacyTap(e) {
+    if (this.data.myAnswered) return;
+    this.setData({ myFallacy: e.currentTarget.dataset.key });
+  },
+
   onSubmit() {
-    const { question, myBreakpoint } = this.data;
-    if (!myBreakpoint) return;
+    const { question, myBreakpoint, myFallacy } = this.data;
+    if (!myBreakpoint || !myFallacy) return;
 
     wx.cloud.callFunction({
       name: 'versus-service',
@@ -114,7 +145,7 @@ Page({
         breakpoint: {
           from: myBreakpoint,
           to: question.cards.find(c => c.type === 'conclusion').id,
-          fallacy: question.fallacyKey,
+          fallacy: myFallacy,
         },
       },
     }).then(() => {
@@ -143,35 +174,46 @@ Page({
   },
 
   settle() {
-    const { question, myBreakpoint, opponentBreakpoint } = this.data;
+    const { question, myBreakpoint, myFallacy, opponentBreakpoint } = this.data;
     const bp = question.breakpoint;
-    const conclusionId = question.cards.find(c => c.type === 'conclusion').id;
 
-    const iAmRight = myBreakpoint === bp.from;
-    const oppRight = opponentBreakpoint === bp.from;
-    const iFoundIt = iAmRight;
+    // 双重判定：断点位置对不对 + 谬误类型对不对
+    const iRightFrom = myBreakpoint === bp.from;
+    const iRightType = myFallacy === bp.fallacy;
+    const iAmRight = iRightFrom && iRightType;
+
+    const oppFrom = opponentBreakpoint && opponentBreakpoint.from;
+    const oppType = opponentBreakpoint && opponentBreakpoint.fallacy;
+    const oppRight = oppFrom === bp.from && oppType === bp.fallacy;
 
     this.setData({
       status: 'finished',
       result: {
-        iFoundIt,
+        iFoundIt: iAmRight,
         oppFoundIt: oppRight,
-        iAmRight,
+        iRightFrom,
+        iRightType,
         oppRight,
         rightFrom: bp.from,
         rightFallacy: bp.fallacy,
+        rightFallacyName: (FALLACIES[bp.fallacy] || {}).name || bp.fallacy,
         truth: question.groundTruth,
+        why: bp.why,
         // 失败方也得到正向反馈：抓到了 = 有效识别
-        verdict: iFoundIt
+        verdict: iAmRight
           ? (oppRight ? '你们都抓到了。' : '你抓到了，对手没看到。')
           : (oppRight ? '对手抓到了，你没有。' : '你们都没抓到——这题的断点比较隐蔽。'),
+        // 细分反馈：告诉用户错在哪一环
+        missDetail: iAmRight ? '' : (!iRightFrom
+          ? '断点位置找错了。'
+          : '位置对了，但谬误类型判断错了。'),
       },
     });
 
     // 无论胜负都写入日志，计入刻度
     app.addLog({
       ts: Date.now(),
-      levelId: 3,
+      levelId: 0,
       fallacyKey: question.fallacyKey,
       correct: iAmRight,
       fellInto: !iAmRight,
@@ -181,8 +223,9 @@ Page({
   },
 
   onAgain() {
+    this.pickedId = null;
     this.setData({
-      status: 'idle', question: null, myBreakpoint: null,
+      status: 'idle', question: null, myBreakpoint: null, myFallacy: null,
       opponentBreakpoint: null, myAnswered: false,
       opponentAnswered: false, result: null, mergedComplete: false,
       roomId: '',

@@ -49,14 +49,37 @@
       双方都提交后才会结算 —— 这是为了让你看到对方的思路
     </view>
 
-    <button wx:if="{{!myAnswered}}" class="btn-primary {{myBreakpoint ? '' : 'btn-disabled'}}" bindtap="onSubmit">
-      提交我的断点
-    </button>
+    <block wx:if="{{!myAnswered}}">
+      <view class="tip" wx:if="{{!myFallacy}}">
+        <text class="tip-text">点一张前提卡，再选出这句话的问题所在</text>
+      </view>
+
+      <view class="options">
+        <view
+          wx:for="{{fallacyOptions}}"
+          wx:key="key"
+          class="option {{myFallacy === item.key ? 'option-active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onFallacyTap"
+        >
+          <text class="option-name">{{item.name}}</text>
+          <text class="option-group">{{item.group}}</text>
+        </view>
+      </view>
+
+      <button class="btn-primary {{myBreakpoint && myFallacy ? '' : 'btn-disabled'}}" bindtap="onSubmit">
+        提交我的断点
+      </button>
+    </block>
   </view>
 
   <!-- 结算 -->
   <view wx:if="{{status === 'finished'}}" class="state-box">
     <text class="state-title">{{result.verdict}}</text>
+
+    <view class="miss-detail" wx:if="{{result.missDetail}}">
+      {{result.missDetail}}
+    </view>
 
     <view class="result-block">
       <view class="result-row">
@@ -75,8 +98,9 @@
 
     <view class="truth">
       <view class="truth-label">正确断点</view>
-      <view class="truth-text">{{result.rightFrom}} → {{result.rightFallacy}}</view>
+      <view class="truth-text">{{result.rightFrom}} → {{result.rightFallacyName}}</view>
       <view class="truth-text truth-body">{{result.truth}}</view>
+      <view class="truth-text truth-why">{{result.why}}</view>
     </view>
 
     <button class="btn-secondary" bindtap="onAgain">再来一局</button>
