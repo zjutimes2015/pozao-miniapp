@@ -14,7 +14,10 @@
   </view>
 
   <view class="scene" wx:if="{{question}}">
-    <view class="scene-tag">{{currentLevel.name}}</view>
+    <view class="scene-head">
+      <view class="scene-tag">{{currentLevel.direction}}</view>
+      <text class="scene-hint">{{directionHint}}</text>
+    </view>
 
     <view class="text-block">{{question.text}}</view>
 

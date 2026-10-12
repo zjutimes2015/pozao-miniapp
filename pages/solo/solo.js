@@ -5,18 +5,32 @@ const { FALLACIES, evaluate, buildFeedback } = require('../../utils/argue-engine
 const bank = require('../../data/levels.js');
 const compliance = require('../../utils/compliance.js');
 
+/**
+ * 三方向记忆锚点（借自「向上 / 向外 / 向内」的记忆法）
+ * 目的：让用户记 3 个方向而不是 12 个词。
+ * 这只改表达，不改任何统计口径或题目本身。
+ */
+const DIRECTION_HINT = {
+  '向外': '别人怎么说，你怎么接',
+  '向上': '谁在推这个结论，凭什么',
+  '向内': '你自己是怎么想的',
+};
+
 Page({
   data: {
     levels: bank.levels.map(lv => ({
       id: lv.id, name: lv.name, scene: lv.scene,
+      direction: lv.direction,
       difficulty: lv.difficulty, unlocked: lv.id === 1,
     })),
     currentLevelId: 1,
     currentQuestionIndex: 0,
+    currentLevel: null,
     question: null,
     cards: [],
     selectedFrom: null,
     selectedFallacy: null,
+    directionHint: '',
     fallacyOptions: [],
     submitted: false,
     result: null,
@@ -62,8 +76,10 @@ Page({
     this.currentLevel = lv;
     this.setData({
       currentLevelId: levelId,
+      currentLevel: lv,
       currentQuestionIndex: 0,
       progressText: `第 ${levelId} 关 · ${lv.name}`,
+      directionHint: DIRECTION_HINT[lv.direction] || '',
     });
     this.loadQuestion();
   },
@@ -140,6 +156,7 @@ Page({
     this.setData({
       levels: bank.levels.map(lv => ({
         id: lv.id, name: lv.name, scene: lv.scene,
+        direction: lv.direction,
         difficulty: lv.difficulty,
         unlocked: lv.id === 1 || passedSet.has(lv.id - 1),
         passed: passedSet.has(lv.id),

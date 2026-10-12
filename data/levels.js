@@ -6,6 +6,8 @@ module.exports = {
       "id": 1,
       "name": "老板的季度总结",
       "scene": "季度复盘会",
+      "direction": "向外",
+      "directionHint": "别人怎么说，你怎么接",
       "difficulty": 1,
       "questions": [
         {
@@ -53,6 +55,8 @@ module.exports = {
       "id": 2,
       "name": "同事的方案汇报",
       "scene": "方案评审会",
+      "direction": "向外",
+      "directionHint": "别人怎么说，你怎么接",
       "difficulty": 2,
       "questions": [
         {
@@ -100,6 +104,8 @@ module.exports = {
       "id": 3,
       "name": "销售的客户话术",
       "scene": "客户沟通",
+      "direction": "向外",
+      "directionHint": "别人怎么说，你怎么接",
       "difficulty": 3,
       "questions": [
         {
@@ -147,6 +153,8 @@ module.exports = {
       "id": 4,
       "name": "老板的危机决策",
       "scene": "紧急会议",
+      "direction": "向上",
+      "directionHint": "谁在推这个结论，凭什么",
       "difficulty": 4,
       "questions": [
         {
@@ -192,6 +200,8 @@ module.exports = {
       "id": 5,
       "name": "行业新闻报道",
       "scene": "行业分析",
+      "direction": "向内",
+      "directionHint": "你自己是怎么想的",
       "difficulty": 5,
       "questions": [
         {

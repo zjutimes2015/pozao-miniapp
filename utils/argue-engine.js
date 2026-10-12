@@ -309,10 +309,12 @@ function computeFingerprint(logs, options) {
   }
 
   // ===== 按组聚合（主榜：首测即可出结果） =====
+  // 三组命名借用「向上 / 向外 / 向内」的记忆锚点，
+  // 让用户记3 个方向而不是 12 个词。这是叙事层优化，不改变统计口径。
   const GROUPS = [
-    { key: '形式', name: '形式推理', desc: '推理结构本身不成立' },
-    { key: '论证', name: '论证依据', desc: '证据不足以支撑结论' },
-    { key: '语义', name: '语义与因果', desc: '词义被偷换，或强行归因' },
+    { key: '形式', name: '向上 · 谁在推结论', desc: '推理结构本身不成立', anchor: '向上' },
+    { key: '论证', name: '向外 · 别人怎么说', desc: '证据不足以支撑结论', anchor: '向外' },
+    { key: '语义', name: '向内 · 你怎么想', desc: '词义被偷换，或强行归因', anchor: '向内' },
   ];
 
   const byGroup = {};
