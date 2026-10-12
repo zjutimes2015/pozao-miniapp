@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brilliant 深度研究报告 · 立论项目竞品分析</title>
+<style>
+:root{
+  --bg:#FCFCFA;
+  --surface:#FFFFFF;
+  --surface-2:#F4F3EF;
+  --text:#1C1C1A;
+  --text-2:#5F5E5A;
+  --text-3:#8B8A85;
+  --line:rgba(28,28,26,0.10);
+  --line-2:rgba(28,28,26,0.18);
+  --blue:#185FA5;
+  --blue-l:#E6F1FB;
+  --red:#A32D2D;
+  --red-l:#FCEBEB;
+  --green:#3B6D11;
+  --green-l:#EAF3DE;
+  --amber:#854F0B;
+  --amber-l:#FAEEDA;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:940px;margin:0 auto;padding:64px 32px 96px}
+
+.masthead{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:48px}
+.masthead .eyebrow{font-size:12px;letter-spacing:0.12em;color:var(--text-3);margin-bottom:14px;text-transform:uppercase}
+.masthead h1{font-size:32px;font-weight:600;letter-spacing:-0.02em;line-height:1.25;margin-bottom:14px}
+.masthead .sub{font-size:15px;color:var(--text-2);max-width:640px}
+.masthead .meta{margin-top:20px;font-size:12px;color:var(--text-3);font-family:var(--mono)}
+
+h2{font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:64px 0 8px;padding-top:8px}
+h2 .num{color:var(--text-3);font-family:var(--mono);font-size:14px;margin-right:12px;font-weight:400}
+h3{font-size:16px;font-weight:600;margin:32px 0 10px}
+h4{font-size:14px;font-weight:600;margin:20px 0 6px;color:var(--text)}
+p{margin-bottom:14px;color:var(--text-2)}
+.lede{font-size:16px;color:var(--text);margin-bottom:20px}
+
+ul,ol{margin:0 0 16px;padding-left:22px;color:var(--text-2)}
+li{margin-bottom:7px}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(24,95,165,0.3)}
+code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--text)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;margin:20px 0}
+.card.tight{padding:18px 20px}
+
+.alert{border-left:3px solid var(--red);background:var(--red-l);border-radius:0 10px 10px 0;padding:16px 20px;margin:20px 0}
+.alert.key{border-left-color:var(--blue);background:var(--blue-l)}
+.alert.warn{border-left-color:var(--amber);background:var(--amber-l)}
+.alert.good{border-left-color:var(--green);background:var(--green-l)}
+.alert .atitle{font-weight:600;font-size:14px;color:var(--text);margin-bottom:6px}
+.alert p{margin:0;font-size:14px;color:var(--text-2)}
+.alert p+p{margin-top:8px}
+
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px}
+th{text-align:left;font-weight:600;padding:10px 12px;border-bottom:1.5px solid var(--line-2);color:var(--text);font-size:12px;letter-spacing:0.03em}
+td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--text-2);vertical-align:top}
+td:first-child{color:var(--text)}
+tr:last-child td{border-bottom:none}
+.tw{overflow-x:auto;margin:20px 0}
+.tw table{margin:0;min-width:560px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:20px 0}
+.stat{background:var(--surface-2);border-radius:10px;padding:16px 18px}
+.stat .lbl{font-size:12px;color:var(--text-2);margin-bottom:5px}
+.stat .val{font-size:23px;font-weight:600;color:var(--text);letter-spacing:-0.01em;line-height:1.2}
+.stat .note{font-size:11.5px;color:var(--text-3);margin-top:5px}
+
+blockquote{border-left:3px solid var(--line-2);padding:2px 0 2px 18px;margin:16px 0;color:var(--text-2);font-size:14.5px}
+blockquote .src{display:block;margin-top:7px;font-size:11.5px;color:var(--text-3);font-family:var(--mono)}
+
+.src{font-size:11.5px;color:var(--text-3);font-family:var(--mono);margin-top:6px;display:block}
+.nf{color:var(--red);font-weight:600}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.tag{font-size:11.5px;padding:3px 9px;background:var(--surface-2);border-radius:20px;color:var(--text-2);font-family:var(--mono)}
+
+hr{border:none;border-top:1px solid var(--line);margin:48px 0}
+
+/* lesson mockup */
+.mock{background:var(--surface);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;margin:24px 0}
+.mock-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--text-3)}
+.mock-bar .dots{display:flex;gap:5px}
+.mock-bar .dots i{width:9px;height:9px;border-radius:50%;background:var(--line-2);display:block}
+.mock-bar .path{margin-left:8px;font-family:var(--mono)}
+.mock-body{padding:28px 32px 32px}
+.mock-q{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.5}
+.mock-sub{font-size:13.5px;color:var(--text-2);margin-bottom:22px}
+.mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:400px}
+.cell{border:1.5px solid var(--line-2);border-radius:8px;height:56px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-3);background:var(--surface)}
+.cell.on{border-color:var(--blue);background:var(--blue-l);color:var(--blue);font-weight:600}
+.mock-hint{margin-top:22px;padding-top:16px;border-top:1px dashed var(--line-2);font-size:13.5px;color:var(--text-2)}
+.mock-hint b{color:var(--text);font-weight:600}
+.mock-koji{margin-top:18px;border:1px solid var(--line-2);border-radius:10px;padding:14px 16px;background:var(--surface-2);font-size:13.5px}
+.mock-koji .kj-head{font-size:11.5px;color:var(--text-3);font-family:var(--mono);margin-bottom:8px;letter-spacing:0.04em}
+.mock-koji .kj-q{color:var(--text);font-weight:500;margin-bottom:4px}
+.mock-koji .kj-sub{font-size:12.5px;color:var(--text-2)}
+
+.lessonlist{counter-reset:l;list-style:none;padding:0;margin:16px 0}
+.lessonlist li{counter-increment:l;padding:7px 0 7px 40px;border-bottom:1px solid var(--line);position:relative;color:var(--text-2);font-size:14px}
+.lessonlist li::before{content:counter(l,decimal-leading-zero);position:absolute;left:0;color:var(--text-3);font-family:var(--mono);font-size:12px;top:9px}
+.lessonlist li:last-child{border-bottom:none}
+.lvl{display:flex;align-items:baseline;gap:10px;margin:24px 0 6px}
+.lvl .n{font-family:var(--mono);font-size:12px;color:var(--text-3);min-width:30px}
+.lvl .t{font-size:15px;font-weight:600;color:var(--text)}
+.lvl .c{font-size:12px;color:var(--text-3);margin-left:auto;font-family:var(--mono)}
+
+.toc{background:var(--surface-2);border-radius:12px;padding:22px 26px;margin:32px 0}
+.tocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 24px;counter-reset:t}
+.tocol a{font-size:13.5px;color:var(--text-2);border:none;display:block;padding:3px 0}
+.tocol a:hover{color:var(--text)}
+.tocol a::before{content:counter(t,decimal-leading-zero) "  ";font-family:var(--mono);font-size:11.5px;color:var(--text-3);counter-increment:t}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">竞品深度研究报告</div>
+  <h1>Brilliant 到底做了什么<br>以及它为什么成功</h1>
+  <p class="sub">针对《立论》论证训练小程序的竞品拆解。含 68 门课完整清单、三门逻辑课全部课时、界面结构复刻、真实用户口碑、财务与融资数据，以及 9 条对《立论》的直接启示。</p>
+  <div class="meta">研究日期 2026-10-10 · 数据来源：brilliant.org 全站页面抓取 / Forge Global / Apple iTunes API / arXiv / BBB 档案 / App Store / Reddit / HN</div>
+</header>
+
+<div class="toc">
+  <div class="tocol">
+    <a href="#s1">执行摘要：三件事推翻了原有判断</a>
+    <a href="#s2">产品解剖：它到底是什么</a>
+    <a href="#s3">界面解剖：交互是怎么做的</a>
+    <a href="#s4">题库解剖：真正的课程内容</a>
+    <a href="#s5">为什么成功：六个机制</a>
+    <a href="#s6">它做错了什么：批评清单</a>
+    <a href="#s7">财务、增长与价格</a>
+    <a href="#s8">对《立论》的九条启示</a>
+    <a href="#s9">数据陷阱与信息空白</a>
+  </div>
+</div>
+
+<h2 id="s1"><span class="num">01</span>执行摘要：三件事推翻了原有判断</h2>
+
+<p class="lede">在开始拆解之前，必须先纠正三个会导致战略误判的事实。这三条是本次研究最重要的产出。</p>
+
+<div class="alert">
+  <div class="atitle">发现一：Daily Challenges 已经下线了</div>
+  <p>Brilliant 曾经最著名的留存机制——每日挑战——<strong>已经不存在了</strong>。</p>
+  <p>证据链：<code>/daily-challenges/</code> 与 <code>/daily/</code> 均返回 <strong>307 重定向</strong>至首页，重定向参数里写着 <code>thedaily_250422_error</code>——维护方自己留下了错误标记。<code>/challenges/</code> 返回 404。帮助中心 100 篇文章全文检索，含 daily/challenge 的条目数为 <strong>0</strong>。</p>
+  <p class="src">brilliant.org/daily-challenges/ → HTTP 307；brilliant.org/help/</p>
+  <p><strong>对你的意义</strong>：如果你之前的竞品分析里写了"对标 Brilliant 的每日挑战"，那部分需要作废。而且这件事本身是个重要信号——<strong>连 Brilliant 都放弃了每日挑战，说明这类玩法撑不住长期留存</strong>。</p>
+</div>
+
+<div class="alert key">
+  <div class="atitle">发现二：Brilliant 现在是一家 AI 家教公司，主推 Koji</div>
+  <p>2025 年 5 月 29 日，创始人 Sue Khim 亲自发布 <strong>Koji</strong>——一个"能看见屏幕上交互组件并直接操作它们"的 AI 家教。发布推文获得 <strong>485 万次浏览</strong>，是当年最火的 AI 教育事件之一。</p>
+  <p>定价页的付费理由已经整体改写：不再是"解锁课程"，而是<strong>"解锁 Koji"</strong>。官网原话：<em>"Meet Koji, your personal tutor"</em>、<em>"A visual, interactive tutor, <strong>not a cheating machine</strong>"</em>、<em>"Koji never just gives you the answer"</em>。</p>
+  <p class="src">brilliant.org 官网首页；brilliant.org/subscribe/；brilliant.org/help/features/how-does-koji-work/</p>
+  <p><strong>对你的意义</strong>：你在 SPEC 里选择的"AI 苏格拉底式陪练"，Brilliant 已经在做了，而且做得比你想的更深。它证明了这条路成立——<strong>但也意味着你不能再把它当作差异化卖点</strong>。真正的差距在下一段。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">发现三：Brilliant 的逻辑内容只有 3 门课，占 68 门的 4.4%</div>
+  <p>我抓取 sitemap 得到 <strong>68 门真实课程</strong>（官方营销口径说"40+"）。其中正式归入 Logical Reasoning 路径的<strong>只有 3 门</strong>，合计 74 课时。而数学类课程有 25 门，编程类 11 门，谜题类 6 门。</p>
+  <p>更关键的是：<strong>它没有批判性思维课、没有论证谬误识别课、没有写作类思辨课</strong>。它官方 FAQ 里有一段专门回应"Brilliant 除了泛泛的批判性思维还教什么"，承认道：<em>"Brilliant teaches <strong>specific, substantive knowledge</strong> in mathematics, coding, data science, and science... <strong>This is a concrete, defensible benefit grounded in the curriculum.</strong>"</em></p>
+  <p class="src">brilliant.org/courses-sitemap.xml（68 门逐页解析）；brilliant.org/help/why-brilliant/brilliant-vs-art-of-problem-solving/</p>
+  <p><strong>对你的意义</strong>：<strong>这是你最大的空隙，且它是被官方自己书面承认的。</strong>Brilliant 卖的是"具体学科知识"，不是"逻辑能力训练"。你的《立论》如果能把 12 类论证谬误做成真正可训练、可测量的东西，你填补的是一个 10 亿美元估值公司主动放弃的位置。</p>
+</div>
+
+<h2 id="s2"><span class="num">02</span>产品解剖：它到底是什么</h2>
+
+<p class="lede">Brilliant 自我定位是 STEM 教育平台，13–113 岁。但它的实际形态与一般"教育平台"差异极大，理解这个形态是理解它成功原因的前提。</p>
+
+<h3>它的四层结构</h3>
+
+<div class="grid2">
+  <div class="card tight">
+    <h4>第一层：68 门课程</h4>
+    <p style="font-size:14px;margin:0">按 12 条 Learning Path 组织：数学基础→代数→进阶代数→高级数学→编程→Python→数据分析→科学→逻辑推理→生活数学→思维谜题→科技。</p>
+  </div>
+  <div class="card tight">
+    <h4>第二层：Level（关卡）</h4>
+    <p style="font-size:14px;margin:0">每门课内部划 3–23 个 Level，有<strong>语义命名</strong>而非纯数字。例如 Calculus 的 Level 叫 "Limits and Continuity" / "Sequences and Series" / "Integrals"。</p>
+  </div>
+  <div class="card tight">
+    <h4>第三层：Lesson（课时）</h4>
+    <p style="font-size:14px;margin:0">26–128 节不等。Contest Math 是 128 节的巨型课程。Logic 课 26 节对应 351 道练习。</p>
+  </div>
+  <div class="card tight">
+    <h4>第四层：Level Review</h4>
+    <p style="font-size:14px;margin:0">每个 Level 末尾有复习测验。<strong>这是它难度标定的关键装置</strong>——过不了就不推进。</p>
+  </div>
+</div>
+
+<h3>免费版的限制：一个精妙的设计</h3>
+
+<p>官方原文：<em>"Free users receive <strong>2 keys per day</strong>, and each key unlocks one lesson or one practice set. Keys reset at midnight in your time zone."</em></p>
+
+<div class="tw">
+<table>
+<thead><tr><th>维度</th><th>Free</th><th>Premium</th></tr></thead>
+<tbody>
+<tr><td>每日可用课时</td><td><strong>2 节</strong></td><td>无限</td></tr>
+<tr><td>课程可访问性</td><td><strong>全部 68 门课</strong></td><td>全部</td></tr>
+<tr><td>课程内导航</td><td>强制顺序解锁</td><td>可跳到任意课时</td></tr>
+<tr><td>Koji AI 家教</td><td>有限预览</td><td>无限</td></tr>
+<tr><td>广告</td><td>课时间偶发</td><td>无</td></tr>
+<tr><td>Streak / XP / 联赛</td><td><strong>✅ 有</strong></td><td>✅ 有</td></tr>
+</tbody>
+</table>
+</div>
+
+<blockquote>
+<span class="src">引自 https://brilliant.org/help/pricing-and-plans/what-s-the-difference-between-free-and-premium/</span>
+两个反直觉但极其重要的点：
+<strong>① 免费用户能访问全部课程</strong>——不是常见的"免费只给前 3 课"。它限的是<em>频次</em>不是<em>内容</em>。
+<strong>② 付费墙没有包住 Streak、XP、联赛排行榜</strong>——留存机制全部免费。
+</blockquote>
+
+<h3>留存机制的完整规则（Daily Challenge 下线后）</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>机制</th><th>规则</th><th>设计意图</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>Streak</strong></td>
+  <td>每日完成<strong>3 题或 1 节完整课时</strong>算一天。断签归零。</td>
+  <td>门槛极低——3 道题约 3 分钟。降低启动摩擦比延长学习时长更重要。</td>
+</tr>
+<tr>
+  <td><strong>Streak Charge</strong></td>
+  <td>最多同时持有 <strong>2 个</strong>，永不过期，断签时自动消耗。<strong>消耗当日不算活跃日</strong>（不涨 streak）。长 streak 有免费自动保命。</td>
+  <td>惩罚已经很高的连续记录上再叠惩罚，是劝退用户的最短路径。</td>
+</tr>
+<tr>
+  <td><strong>Leagues 联赛</strong></td>
+  <td><strong>每联赛 30 人</strong>，每周一 3 AM UTC 开赛并结束，按 XP 排名升段/降段。<strong>共 10 段，元素周期表命名</strong>：Hydrogen → Lithium → Carbon → Neon → Titanium → Xenon → Barium → Neodymium → Tungsten → Einsteinium。</td>
+  <td>30 人 = 小圈层，不是全球榜单。<strong>把竞争限制在"认识的人"范围内</strong>，避免被全球排名劝退。</td>
+</tr>
+<tr>
+  <td><strong>XP</strong></td>
+  <td>周 XP 每周清零。同一天重复做同一课不给 XP，隔天再重做<strong>可以</strong>再给。</td>
+  <td>"隔天可重复刷分"是个精妙设计：既允许复习，又不鼓励当天反复刷。</td>
+</tr>
+<tr>
+  <td><strong>iOS Widget</strong></td>
+  <td>若当天未练习，会推送"<strong>increasingly urgent</strong>"的练习提醒。</td>
+  <td>外部施压，不占应用内注意力。</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s3"><span class="num">03</span>界面解剖：交互是怎么做的</h2>
+
+<p class="lede">这是本次研究里最值得抄的部分。Brilliant 的"界面"根本不是一个你熟悉的题目页面——它是<strong>可以 manipulated 的物理模型</strong>。</p>
+
+<h3>官方对交互的描述</h3>
+
+<blockquote>
+"Most problems on Brilliant are <strong>interactive</strong> — instead of just picking a multiple-choice answer, you'll <strong>type expressions, drag pieces around, and manipulate things directly on screen</strong>."
+<span class="src">brilliant.org/help/features/how-do-i-use-interactives-on-brilliant/</span>
+</blockquote>
+
+<h3>五种真实的交互形态</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>形态</th><th>实际案例</th><th>来源</th></tr></thead>
+<tbody>
+<tr><td><strong>数学键盘输入</strong></td><td>不是选择题，是表达式输入框。支持分数 <code>□/□</code>、根号 <code>√</code>、方向键进出分母与根号内。答对时输入框<strong>变绿并显示对勾</strong>。</td><td>帮助中心</td></tr>
+<tr><td><strong>可拖动切线</strong></td><td>"A learner might <strong>drag a tangent line and watch its slope change</strong>" —— 斜率不是数字，是你可以拖出来看到的东西。</td><td>how-brilliant-teaches-math</td></tr>
+<tr><td><strong>天平式代数</strong></td><td>把方程两边当<strong>平衡物</strong>操作。Koji 会在"推理发生变化的那一步"追问 what operation would preserve the balance。</td><td>is-brilliant-worth-it</td></tr>
+<tr><td><strong>网格配置</strong></td><td>Truth and Lies 的核心交互：填格子、翻开关、拉线索构成推理链。</td><td>课程页</td></tr>
+<tr><td><strong>负数数字块</strong></td><td>拖动底部手柄向下增减负数块，<strong>视觉化展示正负抵消</strong>。官方特别强调："You don't tap the tiles to add them, which is the step most people miss."</td><td>帮助中心</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Lesson 界面结构复刻</h3>
+<p>根据抓取的页面结构与交互描述重建一个典型 lesson 的信息架构：</p>
+
+<div class="mock">
+  <div class="mock-bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="path">Logic / Level 6 Quantifiers / More</span>
+    <span style="margin-left:auto;font-family:var(--mono)">🔊 🔑 ×2</span>
+  </div>
+  <div class="mock-body">
+    <div class="mock-q">Which of the following must be true?</div>
+    <div class="mock-sub">
+      <strong>已知条件</strong>（点击格子标记）
+    </div>
+    <div class="mock-grid">
+      <div class="cell on">Mark ✓</div><div class="cell">Mark ✗</div><div class="cell">?</div>
+      <div class="cell on">Mark ✓</div><div class="cell">Mark ✗</div><div class="cell">?</div>
+      <div class="cell">Mark ✓</div><div class="cell on">Mark ✗</div><div class="cell">?</div>
+    </div>
+    <div class="mock-hint">
+      <b>Hint 1/3</b> — <span style="color:var(--text-3)">需要点击</span> 某个格子才能继续
+    </div>
+    <div class="mock-koji">
+      <div class="kj-head">KOJI</div>
+      <div class="kj-q">你刚才把第三行标记成了 ✗，但"有些人是 A"并不排除所有人都是非 A。</div>
+      <div class="kj-sub">你标出的是"不存在的格子"和"已证否的格子"——这两者在你手上是同一种东西。要区分它们吗？</div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:13.5px">注意这个结构里最关键的一点：<strong>答错不是"显示错误"加一个正确选项</strong>。用户改变的是<em>世界模型的状态</em>（哪些格子被证否），而 Koji 是在<em>用户刚刚做出的那个具体动作</em>上追问。这就是"交互 + 陪练"的正确接缝。</p>
+
+<h3>答错之后发生什么——最被强调的设计原则</h3>
+
+<blockquote>
+"A wrong answer can reveal a <strong>misconception</strong>, a skipped step, or a reasonable idea used in the wrong place. Brilliant's interactive problems respond <strong>while the learner's reasoning is still fresh</strong>, giving them a chance to revise rather than simply marking the attempt wrong."
+<span class="src">brilliant.org/resources/choosing-brilliant/how-brilliant-teaches-math/</span>
+</blockquote>
+
+<blockquote>
+"This creates a safer kind of challenge. Learners can experiment, see what changed, and try again <strong>without treating confusion as evidence that they are 'bad at math'</strong>."
+<span class="src">同上</span>
+</blockquote>
+
+<p>反馈被明确设计为回答三个问题（引 Hattie &amp; Timperley 2007）：<strong>「Where am I going? How am I doing? What should I try next?」</strong></p>
+
+<h2 id="s4"><span class="num">04</span>题库解剖：真正的课程内容</h2>
+
+<p class="lede">你要求题库。这里是三门逻辑课<strong>全部 74 个课时的原始名称</strong>，逐字抓取，无删减。</p>
+
+<h3>课程一：Logic（26 课 / 351 练习 / 7 个 Level）</h3>
+
+<p style="font-size:13.5px">URL: <code>brilliant.org/courses/logic-deduction/</code><br>
+<strong>Topics covered</strong>: Logical Operators · Quantifiers · Order Logic · Deduction · Set Relations<br>
+<strong>官方描述</strong>: "Through these challenging problem solving exercises, you'll <strong>construct the critical thinking skills</strong> that are the basis for mathematical reasoning. You'll use clues with <strong>limited information</strong> to make deductions and solve puzzles."<br>
+<strong>Prerequisites</strong>: "You don't need any previous logic experience!"<br>
+<span class="src">所有 level 名与 lesson 名为页面 HTML 逐字解析所得</span></p>
+
+<div class="lvl"><span class="n">L1</span><span class="t">Order Logic</span></div>
+<ul class="lessonlist">
+<li>Order Logic</li><li>Neighbors</li><li>Heights</li><li>Comparisons</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L2</span><span class="t">Negation</span></div>
+<ul class="lessonlist">
+<li>Relative Comparisons</li><li>Value Logic</li><li>Negation</li><li>Between</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L3</span><span class="t">Rearrangement</span></div>
+<ul class="lessonlist">
+<li>Shuffling</li><li>Swapping</li><li>Rearrangements</li><li>Either/Or</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L4</span><span class="t">Handling Cases</span></div>
+<ul class="lessonlist">
+<li>At Least</li><li>At Most</li><li>Sums</li><li>Differences</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L5</span><span class="t">Assignment</span></div>
+<ul class="lessonlist">
+<li>Assigning Sizes</li><li>Even and Odd</li><li>Bigger and Smaller</li><li>Multiple Properties</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L6</span><span class="t">Quantifiers</span></div>
+<ul class="lessonlist">
+<li>More</li><li>Fewer</li><li>Mixing Quantifiers</li><li>Not and No</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L7</span><span class="t">Optimization</span></div>
+<ul class="lessonlist">
+<li>Minimizing</li><li>Maximizing</li>
+</ul>
+
+<h3>课程二：Reasoning with Logic（26 课 / 216 练习 / 6 个 Level）</h3>
+
+<div class="alert warn">
+  <div class="atitle">这是三门课里最接近《立论》的一门——但仍然有本质差距</div>
+  <p>Topics 明确包含 <strong>Syllogisms（三段论）· Syllogism Fallacies（三段论谬误）· Validity（有效性）· Soundness（可靠性）· Premises（前提）</strong>。</p>
+  <p><strong>但请注意</strong>：它讲的全部是<em>形式逻辑</em>——用 Venn 图在<em>抽象集合</em>上验证论证有效性。它不讲<em>自然语言</em>中的偷换概念、滑坡、诉诸大众、稻草人。它教的是"这个推理结构有效吗"，不是"这段话说得对吗"。<strong>这个差距就是《立论》12 类谬误的立足点。</strong></p>
+</div>
+
+<p style="font-size:13.5px">URL: <code>brilliant.org/courses/logical-languages/</code><br>
+<strong>Prerequisites</strong>: <a href="https://brilliant.org/courses/logic-deduction/">Logic</a>（硬前置，链式）<br>
+<strong>官方描述</strong>: "Use sets and logic to <strong>evaluate arguments for soundness and validity</strong>."</p>
+
+<div class="lvl"><span class="n">L1</span><span class="t">Venn Diagrams</span></div>
+<ul class="lessonlist">
+<li>Introducing Venn Diagrams</li><li>Sets</li><li>Counting in Sets</li><li>Level Review</li>
+</ul>
+<div class="lvl"><span class="n">L2</span><span class="t">Set Operations</span></div>
+<ul class="lessonlist">
+<li>Complement</li><li>Intersection</li><li>Union</li><li>Set Operations and Counting</li>
+</ul>
+<div class="lvl"><span class="n">L3</span><span class="t">Empty and Nonempty Sets</span></div>
+<ul class="lessonlist">
+<li>Empty Sets</li><li>Nonempty Sets</li><li>Counting with Unknowns</li><li>Limited Knowledge</li>
+</ul>
+<div class="lvl"><span class="n">L4</span><span class="t">Diagram Structure</span></div>
+<ul class="lessonlist">
+<li>Subsets</li><li>Determining Existence</li><li>Nested Subsets</li><li>Subsets and Venn Diagrams</li><li>Disjoint</li>
+</ul>
+<div class="lvl"><span class="n">L5</span><span class="t">Introduction to Arguments</span></div>
+<ul class="lessonlist">
+<li>Arguments</li><li>Validity</li><li>False Premises</li><li>Soundness</li>
+</ul>
+<div class="lvl"><span class="n">L6</span><span class="t">Evaluating Arguments Systematically</span></div>
+<ul class="lessonlist">
+<li>Diagramming Arguments</li><li>Arguments with Negation</li><li>Handling Existence</li><li>Arguing Existence</li><li>Arguing Existence and Negation</li><li>Analyzing Arguments</li>
+</ul>
+
+<h3>课程三：Truth and Lies（22 课 / 229 练习 / 6 个 Level）</h3>
+
+<p style="font-size:13.5px">URL: <code>brilliant.org/courses/grid-logic/</code><br>
+<strong>Topics covered</strong>: Binary Grids · Logical Operators · Quantifiers · Conditional Reasoning · Deduction, Parity · <strong>Reasoning from Insufficient Information</strong><br>
+<strong>官方描述</strong>: "Through answering questions posed with <strong>insufficient information</strong>, you'll also learn how to <strong>methodically decide what is and isn't knowable</strong> from a set of premises."<br>
+<strong>Prerequisites</strong>: 页面未标注</p>
+
+<div class="lvl"><span class="n">L1</span><span class="t">The Control Panel</span></div>
+<ul class="lessonlist">
+<li>Driving to Conclusions</li><li>Managing Duplicates</li><li>Configuring Grids</li><li>Sharing Information</li>
+</ul>
+<div class="lvl"><span class="n">L2</span><span class="t">Using Given Information</span></div>
+<ul class="lessonlist">
+<li>Cascading Lights</li><li>Patterns of Lights</li><li>Using Parity</li><li>Rows and Columns</li>
+</ul>
+<div class="lvl"><span class="n">L3</span><span class="t">Using Unknowns</span></div>
+<ul class="lessonlist">
+<li>Insufficient Information</li><li>Reasoning with Unknowns</li><li>Counting</li>
+</ul>
+<div class="lvl"><span class="n">L4</span><span class="t">Toggles</span></div>
+<ul class="lessonlist">
+<li>Robots Ordering Dessert</li><li>Dice Rolls</li><li>Opening Safes</li><li>Opening Complex Safes</li>
+</ul>
+<div class="lvl"><span class="n">L5</span><span class="t">The Rational Detective</span></div>
+<ul class="lessonlist">
+<li>Androids</li><li>Extrapolate</li><li>Unknown Answers</li><li>Jokers</li><li>Rebels</li>
+</ul>
+<div class="lvl"><span class="n">L6</span><span class="t">Multi-Level Thinking</span></div>
+<ul class="lessonlist">
+<li>Guessing Cards</li><li>Hat Puzzles</li>
+</ul>
+
+<h3>课程规模分布：看清它的重心</h3>
+
+<div class="grid3">
+  <div class="stat"><div class="lbl">数学类课程</div><div class="val">25 门</div><div class="note">含 3 门课单独就是"思维谜题"：Contest Math 128 课 / Geometry 86 课 / Number Theory 75 课</div></div>
+  <div class="stat"><div class="lbl">编程与数据类</div><div class="val">16 门</div><div class="note">Python 7 门 · 编程 2 门 · 数据分析 5 门 · CS 2 门</div></div>
+  <div class="stat" style="background:var(--blue-l)"><div class="lbl">逻辑推理类</div><div class="val" style="color:var(--blue)">3 门</div><div class="note">74 课时 · 占全站 4.4% · 官方 FAQ 承认不教批判性思维</div></div>
+</div>
+
+<h3>它的"课程覆盖审计"方法论——罕见地公开了计算公式</h3>
+
+<p>Brilliant 在 CS 课程上做过一次公开审计，方法论值得学习：</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>指标</th><th>数值</th></tr></thead>
+<tbody>
+<tr><td>框架技能总数</td><td><strong>302 项</strong>（CS 基础 196 + AI 编码 106）</td></tr>
+<tr><td>计算公式</td><td><code>(Covered + 0.5 × Partial) ÷ Total</code></td></tr>
+<tr><td><strong>总体覆盖率</strong></td><td><strong>55%</strong>（Covered 150 / Partial 32 / Gap 120）</td></tr>
+<tr><td>最高分项</td><td>Control Flow &amp; Logic — <strong>92%</strong></td></tr>
+<tr><td>最低分项</td><td>Security <strong>0%</strong> · Taste 4% · Designing Workflows 8%</td></tr>
+<tr><td>对外 benchmark</td><td>MIT 6.100A = 88% · Harvard CS50x = 50%</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="alert key">
+  <div class="atitle">为什么这条对你极其重要</div>
+  <p>Brilliant 敢于公开写"<strong>我们的 CS 课程只覆盖 MIT 的 55%</strong>"，并且给出公式。这是<strong>内容诚实的典范</strong>。</p>
+  <p>你的《立论》SPEC 里写了"12 维谬误训练"，那就应该<strong>公开你的覆盖率</strong>——比如"我们覆盖了日常论证中约 X% 的谬误模式"。这不是自曝短板，这是建立信任。在 AI 生成内容普遍不可信的市场里，<strong>公开的能力边界本身就是竞争力</strong>。</p>
+</div>
+
+<h2 id="s5"><span class="num">05</span>为什么成功：六个机制</h2>
+
+<p class="lede">不是"内容好 + 创始人牛"这么简单。我把它拆成六个可以分别验证的机制，每个都有它自己公开的动作。</p>
+
+<h3>机制一：把"做题"本身变成教学，而不是教学的附属品</h3>
+
+<blockquote>
+"Khan Academy generally explains a concept through a <strong>video or article</strong> and then asks students to practice it. <strong>Brilliant makes problem solving the lesson itself.</strong>"
+<span class="src">brilliant.org/resources/choosing-brilliant/brilliant-vs-khan-academy/</span>
+</blockquote>
+
+<p>这不是文案。这是产品结构差异——视频课是"观看→理解→练习"，Brilliant 是"练习→理解"。它的用户在<strong>还没学过任何东西之前就已经在做</strong>。这解释了为什么它的单次时长是 15–30 分钟而非 5 分钟（第三方评测口径），以及为什么用户愿意付 $27.99/月。</p>
+
+<h3>机制二：答错的瞬间是最宝贵的教学时刻——它完整占据了这个时刻</h3>
+
+<p>前面引过的"respond while the learner's reasoning is still fresh"是原则层。Koji 是执行层：</p>
+
+<blockquote>
+"Koji can see what you've done so far, to <strong>pinpoint where a misunderstanding lies</strong>. Koji can <strong>draw on and manipulate the learning environment</strong> to help things make sense. It's like an infinitely patient tutor, able to see over your shoulder."
+<span class="src">brilliant.org/help/features/how-does-koji-work/，页面最后更新 2026-09-15</span>
+</blockquote>
+
+<div class="alert good">
+  <div class="atitle">Koji 的准确率机制——这是它最聪明的一处工程设计</div>
+  <p>官方原话：<em>"Because of how Koji is connected to Brilliant's overall learning and interactive infrastructure, Koji is <strong>exceedingly unlikely to make a math mistake</strong> (unlike other AI tutors) – a similar rate to the human errors we occasionally make in our content."</em></p>
+  <p><strong>翻译成工程语言</strong>：它的题库是<strong>代码搭建的确定性系统</strong>，不是让 LLM 猜。AI 只负责"看用户当前状态 + 组织语言"，<strong>正确性由底层的交互组件保证</strong>。</p>
+  <p><strong>对你的启示</strong>：这正是我在你的 SPEC 里写的"形式类题目程序化生成 + 真值表验证"的现实案例。<strong>AI 陪练的正确性保障必须来自题库 ground_truth，不能来自模型自洽。</strong>Brilliant 用 12 年时间才走到这一步，你可以在第一天就做对。</p>
+</div>
+
+<h3>机制三：公开反对把学习做成游戏——还发了论文</h3>
+
+<p>这是本次研究最意外的发现。<strong>Brilliant 在 2025 年 12 月公开了一份 arXiv 论文，结论是不要把外在奖励当核心激励机制。</strong></p>
+
+<blockquote>
+"Learners consistently preferred GDEs that support learning processes directly—most notably <strong>progress bars, concept maps, immediate feedback, and achievements</strong>."
+"The findings suggest that learners value gamification elements that are <strong>meaningfully integrated with educational content</strong> and support intrinsic motivation. Purpose-aligned gamification should <strong>prioritize tools that visualize learning progress and provide actionable feedback, rather than relying solely on extrinsic incentives.</strong>"
+<span class="src">论文《Gamification with Purpose: What Learners Prefer to Motivate Their Learning》，Kai Marquardt, Mona Schulz, Anne Koziolek, Lucia Happe（Brilliant 员工），arXiv:2512.08551，2025-12-09</span>
+</blockquote>
+
+<p>研究方法：识别 10 种 game design elements → 每种做视觉原型 → <strong>best-worst scaling 问卷，125 名参与者</strong>排序偏好 → 定性反馈。</p>
+
+<p>Brilliant 高管的公开解读：</p>
+<blockquote>
+"We asked 125 learners what helps them organise and motivate their learning. <strong>The most valued gamification features were not points or coins. They were progress indicators, feedback, and achievements.</strong>"
+"The real question is not: <strong>'How do we make learning addictive?'</strong> It's: <strong>'How do we make thinking rewarding?'</strong> Those two goals lead to very different products."
+<span class="src">LinkedIn，文章作者方为 Brilliant 官方账号</span>
+</blockquote>
+
+<div class="alert warn">
+  <div class="atitle">但这里有一处明显的内在张力，值得你注意</div>
+  <p>论文说"不要只依赖外在激励"，而 Brilliant 同时保留 XP + 10 段联赛晋升 + 每周清零的排行榜 + iOS Widget 施压。</p>
+  <p><strong>合理解读</strong>：他们把 extrinsic 机制当作<strong>外围留存层</strong>，把论文主张的 progress/feedback 当作<strong>产品内核</strong>。这解释了为什么联赛被设计成"friendly competition"、30 人小圈层，而不是全球高压榜单。</p>
+  <p><strong>对你的启示</strong>：你的 SPEC 选择了"能力刻度"作为唯一壁垒，这与这篇论文的核心结论<strong>高度一致</strong>——刻度正是"可视化学习进度"。你不需要为这个选择辩护，它有独立的方法论支持。但反过来说，你<strong>必须真的做出刻度</strong>，如果只是把 12 个分数画成雷达图而不让用户感知"移动"，那你就只是做了个计数器。</p>
+</div>
+
+<h3>机制四：方法论每一句话都有学术引用</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>原则</th><th>官方表述</th><th>引用文献</th></tr></thead>
+<tbody>
+<tr><td>Active learning</td><td>"asks learners to make decisions: move a point, test a pattern, estimate an answer, choose a strategy, or decide what must be true"</td><td>Freeman et al. 2014</td></tr>
+<tr><td>Retrieval</td><td>"Retrieving a method (rather than rereading it) strengthens later retention"</td><td>Roediger &amp; Karpicke 2006</td></tr>
+<tr><td>Spacing</td><td>"Returning to important ideas across sessions improves long-term retention"</td><td>Rohrer &amp; Taylor 2007</td></tr>
+<tr><td>Interleaving</td><td>"Mixing related problem types makes the learner <strong>decide which strategy applies</strong>... even when blocked practice feels easier in the moment"</td><td>Rohrer &amp; Taylor 2007</td></tr>
+<tr><td>Feedback</td><td>"Correcting a misconception <strong>while the reasoning is still visible</strong> helps the learner update the idea instead of rehearsing the error"</td><td>Hattie &amp; Timperley 2007</td></tr>
+</tbody>
+</table>
+</div>
+<p class="src">全部引自 brilliant.org/resources/choosing-brilliant/how-brilliant-teaches-math/</p>
+
+<p>两句最关键的方法论原话：</p>
+<blockquote>
+"<strong>Guided discovery is not the same as leaving someone to guess.</strong> Questions, examples, feedback, and direct instruction are arranged to keep the learner moving <strong>without doing the thinking for them</strong>."
+"Brilliant often asks a question <strong>before</strong> presenting a procedure. That first attempt gives the explanation a purpose and surfaces what the learner already understands."
+</blockquote>
+
+<h3>机制五：AI 不作为答案机，而作为"永远不生气的老师"</h3>
+
+<p>Koji 的产品定义里最要紧的一句，是它刻意强调自己不是 cheat machine。这个定位决定了它面对的评测与 LLM 完全相反：</p>
+
+<p class="src" style="margin-top:0">App Store 五星评价（一手）："The AI assistant is useful and walks me through it and <strong>doesn't get mad when I get something wrong</strong>."</p>
+
+<h3>机制六：它敢公开说自己不适合谁</h3>
+
+<blockquote>
+"Choose something else if you need a course that issues school credit or transcripts, a résumé credential, or a human who provides scheduled accountability."
+"The learner wants a <strong>lecture-led course</strong> or homework answers."
+<span class="src">brilliant.org/resources/choosing-brilliant/is-brilliant-worth-it/</span>
+</blockquote>
+
+<p>主动劝退不适合的用户，减少退款与差评——这在订阅制产品里是反直觉但正确的做法。</p>
+
+<h3>补充：它做对了的社区与增长动作</h3>
+
+<ul>
+<li><strong>为 NYT Wordplay、The Guardian、FiveThirtyEight 提供原创谜题</strong>——用专业声誉反哺获客。</li>
+<li><strong>YouTube 赞助是第一增长引擎</strong>：已在 <strong>377 个频道、1,905 个视频</strong>投放（截至 2026-09-24），单条估算 $2.5K–$5.0K，顶级频道（Veritasium，2110万订阅）单条估算 <strong>$104K–$208K</strong>。投放码普遍是"年费 8 折"。<span class="src">sponsorradar.com/brands/brilliant-org</span></li>
+<li><strong>免费版本极其慷慨</strong>：68 门课全部免费可进，只是每天 2 节课。这是内容驱动的增长飞轮。</li>
+<li><strong>刻意避开 B2B 学区直销</strong>：官方招聘页明确"avoiding B2B sales to school districts"，以保持与学习者的直接关系和快速迭代。</li>
+</ul>
+
+<h2 id="s6"><span class="num">06</span>它做错了什么：真实批评清单</h2>
+
+<p class="lede">成功案例最有价值的部分是失败的部分。以下批评全部来自一手渠道（App Store 评论、BBB 官方投诉档案、Trustpilot、Hacker News），不是二手评测。</p>
+
+<h3>批评一：自动续费与退款政策 —— 压倒性的第一大投诉</h3>
+
+<p>这是<strong>跨四个平台、数量最多、最具体的批评</strong>，且持续到 2026 年仍未解决。</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>来源</th><th>原文</th></tr></thead>
+<tbody>
+<tr><td>App Store 1 星</td><td>"<strong>Can’t cancel subscription in app.</strong> How is this legal? And the webpage the app sends users to to cancel redirects back to the app or shows an error after logging in. <strong>What a scam.</strong>"</td></tr>
+<tr><td>App Store 1 星</td><td>"<strong>Predatory.</strong> Another baiting free trial app that will take your money and refuse you a refund. <strong>If the only money you're making is because people forget to cancel the free trial, then your app needs to be better.</strong>"</td></tr>
+<tr><td>BBB 档案<br><span style="font-size:11px">2025-10-18</span></td><td>"<strong>JUST CHARGED MY CARD 140 DOLLARS WHEN I ONLY SIGNED UP FOR A SIMPLE MONTHLY SERVICE. THIS IS A SICK COUNTRY... BRILLIANT.ORG IS USING PREDATORY TACTICS</strong>"</td></tr>
+<tr><td>BBB 档案<br><span style="font-size:11px">2026-07-05</span></td><td>"This company <strong>duped me into an annual subscription</strong> I do not want after a free trial... The auto renewal was for an <strong>annual subscription instead of monthly</strong> and now I am out over $200... they said no."</td></tr>
+<tr><td>Hacker News</td><td>有专门帖子《Ask HN: What to do when brilliant.org charges your card even after you cancelled》，最高赞回复建议直接 <strong>chargeback</strong>。</td></tr>
+<tr><td>Trustpilot</td><td>"the free trial is like a <strong>trap</strong>."</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>叠加问题：<strong>年付退款窗口仅约 3 天</strong>（扣费后三天内）。这是用户在投诉中反复提及的不合理点。</p>
+
+<div class="alert key">
+  <div class="atitle">对你的启示：这条直接支持你在 SPEC 里的一个决策</div>
+  <p>你选择「<strong>¥49 买断，不做订阅</strong>」，当时的理由是"规避续费纠纷"。现在有了外部证据：<strong>Brilliant 这个估值 $3 亿的成熟公司，正因为订阅+试用期+3天退款窗口，在 BBB 留下正式投诉档案，在 HN 被建议 chargeback。</strong></p>
+  <p>买断制的价值不只是合规简单，是<strong>它让你在结构上不可能成为那种公司</strong>。这个决策可以更硬气一点。</p>
+</div>
+
+<h3>批评二：付费墙"激进化"，免费版体验被广告与 FOMO 打断</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>来源</th><th>原文</th></tr></thead>
+<tbody>
+<tr><td>App Store 2 星<br><span style="font-size:11px">长评，写得很具体</span></td><td>"<strong>Brilliant; but insultingly limited as a 'free' app</strong>... The free experience gets you <strong>one 'warm up' (recycled review content) and one new lesson (5-10min) per day. Every day, you get to watch <strong>one unskippable video ad</strong> for Premium, <strong>3 FOMO notifications, and a nag screen</strong>."</td></tr>
+<tr><td>App Store 1 星</td><td>"<strong>Way too expensive.</strong> The idea sounds great but the free version doesn't even showcase what may or may not be worth almost $200."</td></tr>
+<tr><td>App Store 3 星</td><td>"<strong>Upset with lesson limit.</strong> The lessons are amazing but if you want to do more than 2 lessons a day you have to subscribe."</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>批评三：内容陈旧、重复，多年缺乏更新；社区被关停</h3>
+
+<blockquote>
+"1) <strong>There hasn't been any meaningful attempt at adding new content in years.</strong> Moreover, <strong>many 'courses' share the exact same material.</strong> 2) They've <strong>done away with the open discussion solution forum</strong>; all you get is the (often stupid) AI staff solution. 3) <strong>The daily challenges... cycle through the same boring repetitions of like ten different types of questions.</strong>"
+<span class="src">App Store 评论，via JustUseApp 收录（913335252）</span>
+</blockquote>
+
+<p>Hacker News 有专门帖子《Brilliant.org is shutting down community section to focus on interactive courses》，社区评论：<em>"It's really disappointing to see this happen—especially from a website that is so widely advertised on sites like YouTube... it seems as though this change is <strong>less focused on the satisfaction of the users... and more focused on increasing revenue</strong>."</em></p>
+
+<h3>批评四：深度天花板——"这只是给大学水平的人复习概念"</h3>
+
+<blockquote>
+"<strong>Very poorly written app</strong>... This does not teach you anything. It is merely a <strong>game type review of Concepts that a person with a college level degree would know.</strong> I wasted $125."
+<span class="src">App Store 1 星</span>
+</blockquote>
+
+<p>第三方评测的判断：<em>"Brilliant is a <strong>breadth and intuition builder, not a replacement for a university degree</strong>... You'll learn enough probability to reason about risk intelligently, but <strong>not enough to build a Monte Carlo simulation from scratch</strong>. That's fine for most people - but if you are a graduate student seeking rigor, <strong>the interactive format will feel patronizing</strong>."</em><span class="src">isitworth.site/reviews/brilliant</span></p>
+
+<h3>批评五：Koji 的能力不足（2025 年新功能的集中吐槽）</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>来源</th><th>原文</th></tr></thead>
+<tbody>
+<tr><td>App Store 5 星<br><span style="font-size:11px">（负面部分）</span></td><td>"<strong>Everything is good but the AI.</strong> The AI is <strong>not good at all</strong>, I try to discuss the question and mistakes and <strong>it's unable to answer a reasonable response</strong> when I don't understand. It would <strong>pretend I answer yes, that I understand, and continue without really helping.</strong> I like AI but this is a bad implementation."</td></tr>
+<tr><td>App Store 2 星</td><td>"<strong>$100+ for AI is wild</strong>... it was very clear when using the 'tutor' that it responds in the typical AI way. It's a great app, <strong>if it weren't so expensive for an AI tutor.</strong>"</td></tr>
+<tr><td>Trustpilot</td><td>"<strong>The learning method is useless</strong> — you can just watch a 15 minute youtube video and learn what it takes them an hour to teach."</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>批评六：账号删除困难（2024 年曾被 HN 专门提交帖子）</h3>
+
+<blockquote>
+"Having to jump through hoops to delete an account is one of my pet peeves. It shouldn't be difficult. It definitely shouldn't be impossible."
+<span class="src">HN，帖子标题：Brilliant.org doesn't allow you to delete accounts</span>
+</blockquote>
+
+<h3>批评七：内容严谨性错误</h3>
+<p>有用户具体指出："App claimed the International Space Station (ISS) is '<strong>weightless</strong>'. This is a slightly erroneous term... as this is an <strong>educational app</strong>, I believe it should be held to higher standards."<span class="src">App Store 评论</span></p>
+
+<h3>批评八：用户不信任其评价真实性</h3>
+<p>"<strong>most of the Reviews I feel are fake</strong>" / "Anyone who doesn't believe me can go online and check their reviews on Reddit, <strong>they are horrible</strong>"<span class="src">App Store 1 星 ×2</span></p>
+<p>第三方分析补充："YouTube sponsorship ubiquity creates '<strong>shill fatigue</strong>'... Some viewers report 'Brilliant fatigue' — tuning out the moment they hear the sponsorship read."<span class="src">crows-eye.com/brilliant</span></p>
+
+<h2 id="s7"><span class="num">07</span>财务、增长与价格</h2>
+
+<h3>融资历史（来源：Forge Global，基于公司 409A/估值文件）</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>时间</th><th>轮次</th><th>金额</th><th>投后估值</th><th>投资方</th></tr></thead>
+<tbody>
+<tr><td>2011-03</td><td>Seed</td><td>$0.48M</td><td>$5.59M</td><td>Excelerate, Hyde Park, Kapor Capital, Sam Yagan</td></tr>
+<tr><td>2012-08</td><td>Series A</td><td>$2.94M</td><td>$17.06M</td><td>未披露</td></tr>
+<tr><td>2013-08</td><td>Series A-1</td><td>$6.27M</td><td>$39.57M</td><td><strong>500 Startups</strong>, Learn Capital, RTA</td></tr>
+<tr><td>2015-06</td><td>Series B</td><td>$11.21M</td><td>$87.14M</td><td>Next Play Ventures</td></tr>
+<tr><td>2018-06</td><td>Series B-1/B-2</td><td>$8.31M</td><td>$47.14M</td><td>500 Global, Hemisphere, TCG Crossover</td></tr>
+<tr><td>2022-05</td><td><strong>Series C-1</strong></td><td><strong>$50M</strong></td><td><strong>$304.76M</strong></td><td><strong>Union Square Ventures</strong> 领投, USV, KD Capital</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>累计融资 $94.64M，最新估值 $304.76M</strong>（2022 年 5 月 Series C-1，每股 $9.11，流通股 5,490,704 股）。<span class="src">forgeglobal.com/brilliant_ipo/</span></p>
+
+<div class="grid3">
+  <div class="stat"><div class="lbl">注册用户（官方口径）</div><div class="val">1000 万+</div><div class="note">2019 年 Forbes 报道时为 700 万</div></div>
+  <div class="stat"><div class="lbl">付费订阅者</div><div class="val">数十万</div><div class="note">官方招聘页："hundreds of thousands of paid subscribers"</div></div>
+  <div class="stat"><div class="lbl">员工数</div><div class="val">~60 人</div><div class="note">官方口径。第三方估计 96–140 人均不符</div></div>
+</div>
+
+<div class="alert warn">
+  <div class="atitle">营收数据的诚实说明</div>
+  <p>唯一权威的一手营收口径是 <strong>Forbes 2019 年报道</strong>：Sue Khim 当时预计当年 ARR 突破 <strong>$10M</strong>（当时融资 $27M、估值 $50M）。</p>
+  <p><strong>2020 年至今的营收、付费转化率、留存率、ARPU、LTV/CAC：无任何可信公开信息。</strong>官方帮助页自己承认："Specific retention rates are not publicly detailed."</p>
+  <p>网上流传的"ARR $220M""600K–3.8M 付费用户""转化率 4.2%""churn 3.5%"等数字，<strong>全部出自 AI 生成的内容农场，同一网站自相矛盾，不予采信</strong>。详细清单见 §9。</p>
+</div>
+
+<h3>定价：采用地理区域定价，同一账号价格可差数倍</h3>
+
+<p>我实测不同出口 IP 下订阅页返回不同货币。页面内嵌请求参数为 <code>paywall({"location":{"countryCode":"CN","postalCode":"200000"}})</code>，即<strong>按 IP 定位国家</strong>。</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>访问来源</th><th>返回的定价</th></tr></thead>
+<tbody>
+<tr><td><strong>中国 IP</strong></td><td>Pro 年付 <strong>¥960</strong> · Pro 月付 ¥120 · 家庭年付 ¥320（6 席）· 家庭月付 ¥40 · <strong>终身买断 ¥4750</strong></td></tr>
+<tr><td>英国 IP</td><td>Individual <strong>£12.50/月</strong> · Family £25/月（6 seats）</td></tr>
+<tr><td>美国</td><td>1 Year <strong>$161.88</strong>（官方标注 Save 38%）· 1 Month <strong>$27.99</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="alert good">
+  <div class="atitle">这条对你的定价决策是直接证据</div>
+  <p><strong>Brilliant 在中国的定价是 Pro 年付 ¥960</strong>（约 $133），月付 ¥120（约 $17）。</p>
+  <p>你的 SPEC 里定的「<strong>30 天处方 ¥49 买断</strong>」，<strong>只有 Brilliant 中国月付价的 40%</strong>，年付价的 5%。这个定价极度保守——保守到可能低估了付费意愿。</p>
+  <p>建议：V1 保持 ¥49 不动（验证期不该涨），但在 SPEC 里补记一条：<strong>¥49 验证成功后，Android 端候选价格区间是 ¥128–¥298/年</strong>，参照 Brilliant 中国区定价与你已有的成人知识付费市场数据（年均支出 ¥620）。</p>
+</div>
+
+<h3>终身买断的"隐藏"设计——一个值得学的坏例子</h3>
+<p>澳州折扣论坛的用户调查揭示（2022 年前后）：<strong>Lifetime 套餐被刻意隐藏</strong>——只在用户先注册付费年付后才显示，且买年付时<strong>必须"作为礼物送给自己"才能解锁</strong>。用 VPN 切换国家可绕过，但支付会被拒付。<span class="src">ozbargain.com.au/node/834283</span></p>
+<p>用户批评分类中这被归为："<strong>付费后才发现关键选项被隐藏</strong>"。</p>
+
+<h3>Koji 的效果数据（Brilliant 自报，含自家免责声明）</h3>
+<blockquote>
+"In a Brilliant analysis of middle- and high-school learners who requested Koji's help during math lessons in <strong>July 2026</strong>, <strong>94% made another attempt</strong>. <strong>Sixty-six percent</strong> then submitted a correct answer to that same problem <strong>without Koji revealing the answer</strong>. Of the learners who continued to the next problem, <strong>87% answered it correctly</strong>."
+<span class="src">brilliant.org/resources/choosing-brilliant/is-brilliant-worth-it/</span>
+</blockquote>
+
+<p style="font-size:13.5px"><strong>但 Brilliant 自己加了免责声明</strong>：<em>"These figures are <strong>behavioral signals, not proof</strong> that Brilliant works for every learner or a substitute for a controlled academic study."</em>——这个自我限制的诚实度，值得你在自己的数据报告里照抄。</p>
+
+<h3>第三方学术研究：只有两项，且都不完美</h3>
+
+<div class="tw">
+<table>
+<thead><tr><th>研究</th><th>设计</th><th>结论</th></tr></thead>
+<tbody>
+<tr>
+  <td>de la Puente &amp; Perez Hernández (2023)<br><em>Mathematics Teaching Research Journal</em> 15(2), 82-103</td>
+  <td>巴兰基亚市 <strong>60 名十年级</strong>学生，4 所公立学校，准实验设计</td>
+  <td>使用 Brilliant 的学生成绩显著提升。<strong>但论文自己承认</strong>：<em>"the one-way ANOVA test results showed that <strong>there were no significant differences in final grades between the experimental group and other groups</strong>"</em>（横向比较不占优势）；且 <em>"Several students stated that <strong>Brilliant needed more time and effort than traditional learning methods</strong>"</em></td>
+</tr>
+<tr>
+  <td>同上团队 (2024)<br><em>Ubiquitous Learning</em> 17(2), 93-110</td>
+  <td><strong>71 名十一年级</strong>学生，5 所公立学校，更大样本</td>
+  <td>测试成绩提升 <strong>15%</strong>，整体学科理解度提升 <strong>20%</strong>；使用时长与成绩提升正相关</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">全文 PDF: files.eric.ed.gov/fulltext/EJ1394390.pdf；ERIC: EJ1394390</p>
+
+<div class="alert warn">
+  <div class="atitle">关于"MIT 背书"这个常见误解</div>
+  <p>Brilliant 官网反复出现 "Built by top learning experts from <strong>MIT</strong> and Harvard"、"crafted by... from MIT, Harvard, Stanford, Cornell, Caltech"。</p>
+  <p><strong>这是内容作者的机构背景，不是机构的评价或背书。</strong>未找到 MIT 或任何大学对 Brilliant 做过评估或推荐。WASC 认证是<strong>补充教育（supplementary education）</strong>认证，<strong>明确不发行学分、成绩单、文凭</strong>。这两件事常被混淆，写报告时务必区分。</p>
+</div>
+
+<h2 id="s8"><span class="num">08</span>对《立论》的九条直接启示</h2>
+
+<p class="lede">这一节是把前面的分析转化成你项目动作的地方。每条都对应 SPEC 里需要改的地方。</p>
+
+<div class="alert key">
+  <div class="atitle">启示一：把差异化从"AI 陪练"改为"AI 陪练 + 交互式推理界面"</div>
+  <p>你原本选"AI 苏格拉底陪练"作为留存机制，理由是差异化。但 <strong>Koji 已经把这件事做到了工业级</strong>——485 万曝光、有 WASC 认证、有 kidSAFE COPPA 认证、有 125 人学术研究支撑、Koji 上线时拿到的评价是"doesn't get mad when I get something wrong"。</p>
+  <p><strong>你不可能在陪练的智能程度上赢过它，也不该赢。</strong>但 Brilliant 的交互组件是<strong>数学物理模型</strong>（天平、切线、负数块、代码追踪）——它们为数学定制，你无法照搬也无需照搬。</p>
+  <p><strong>《立论》的交互应该是论证结构本身</strong>：把一段论证的<strong>前提</strong>和<strong>结论</strong>拆成可拖拽的卡片，把<strong>推理链</strong>做成可视化的连线——用户拖错一张卡，Koji/引擎就在那个断点追问"这个前提从哪来"。<em>论证推理图 = 论证训练的"天平"。</em>这是 Brilliant 没有的东西，因为它的内容里没有论证谬误。</p>
+</div>
+
+<div class="alert key">
+  <div class="atitle">启示二：SPEC §4.3 的防幻觉架构已被验证，继续执行，但补一层</div>
+  <p>Brilliant 的做法（题目由代码搭建、正确性由交互组件保证、AI 只组织语言）与你 SPEC 里"形式类程序化生成 + 真值表验证 + AI 只基于 ground_truth 追问"是<strong>同一个架构</strong>。你选对了。</p>
+  <p><strong>要补的一层</strong>：Brilliant 还做到了 <strong>"AI 极不可能犯错，错误率与人类作者偶发错误相当"</strong>。你的形式类 4 维要达到同一水平，需要的不只是真值表验证，而是<strong>把每种谬误形式化成一个"推理模式识别器"</strong>——给定题干，自动抽取前提集与结论集，用规则判断推理形式是否有效。这在 SPEC 里目前只写了真值表，需要在 W1 细化。</p>
+</div>
+
+<div class="alert good">
+  <div class="atitle">启示三：免费版限制的正确形态——限频次，不限内容</div>
+  <p>Brilliant 免费用户能进<strong>全部 68 门课</strong>，只限每天 2 节课，且顺序解锁。反过来，它的付费墙<strong>没有包住</strong> Streak / XP / 联赛——所有留存机制全部免费。</p>
+  <p>你的 SPEC 里"刻度永久免费、处方收费"与此结构一致，但建议再明确一步：<strong>12 类谬误的识别训练全部免费、无限次，不设每日上限</strong>。你已经在算 AI 成本只有 ¥0.0064/次——<strong>不要用频次限制换收入，那会让你变成一个更贵的数独</strong>。</p>
+</div>
+
+<div class="alert good">
+  <div class="atitle">启示四：把"能力边界公开"做成竞争力</div>
+  <p>Brilliant 公开写"我们的 CS 课程只覆盖 MIT 的 55%"并给出计算公式。你应该公开"《立论》覆盖日常论证中约 X% 的常见谬误模式，并说明哪 X% 不覆盖"。</p>
+  <p>理由：AI 生成内容正在把整个教育产品的可信度拖进泥潭，而你的核心资产恰恰是<strong>题库的准确性和覆盖边界的诚实性</strong>。公开边界是最低成本的信任建设。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">启示五：¥49 定价可以更硬气，理由现在有外部证据</div>
+  <p>Brilliant 中国区 Pro 年付 <strong>¥960</strong>、月付 ¥120。你的 ¥49 买断是它月付价的 40%。</p>
+  <p>更重要的是：Brilliant 因订阅+试用期+3天退款窗口在 BBB 留下了正式投诉档案。<strong>买断制让你在结构上不可能成为那种公司</strong>——这个理由比"规避 iOS 禁令"更有力，值得写进 SPEC。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">启示六：警惕"每日挑战"式的关卡设计</div>
+  <p>Brilliant 已经放弃 Daily Challenges，且用户批评里有大量"daily challenges 就是十种题目的无聊重复"。</p>
+  <p>你的《立论》如果后续要做每日推送，<strong>内容必须每天不同</strong>——真实-world 论证片段（老板说的话、新闻里的说法、合同条款）比抽象谬误题更适合做日更素材库。这也是一个内容护城河：<strong>论证素材库比题型库更难被复制</strong>。建议写进 SPEC §4.4。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">启示七：Leagues 的"小圈层"设计可以直接借</div>
+  <p>Brilliant 的联赛是 <strong>30 人</strong>、每周重置、10 段晋升。30 人的规模意味着竞争者是你<em>认识的人</em>，不是全球陌生人。</p>
+  <p>你的 SPEC 里 V1 明确不做排行榜（正确决定，冷启动没种子用户）。但 V2 要做时，请记住这个设计原则：<strong>小圈层 &gt; 大榜单</strong>。可以做"你和你邀请的 20 个人"这种封闭小联赛，成本低、压力小、社交货币强。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">启示八：数据报告要像它那样主动标注局限</div>
+  <p>Koji 效果数据后面，Brilliant 自己写了一句："These figures are behavioral signals, <strong>not proof</strong>... or a substitute for a controlled academic study."</p>
+  <p>你的 SPEC ⑤ 已经预设了失败门槛，态度是对的。补充：<strong>未来对外展示任何数据（包括百分位、正确率、提升幅度）时，都要标注样本量与统计口径</strong>。考虑到你的用户画像是"讲逻辑的人"，<strong>数据上的漏洞会被立刻发现</strong>——这既是风险也是你的竞争优势。</p>
+</div>
+
+<div class="alert">
+  <div class="atitle">启示九：它放弃的三个东西，你不该捡</div>
+  <p>Brilliant 关掉了社区论坛、被用户批评"过度依赖 YouTube 赞助导致刷屏疲劳"、"学完的课无法复习"。</p>
+  <p>其中最后一条值得你注意：<strong>学完的课不能复习，是很多用户的核心抱怨</strong>。你的《立论》天然适合做反例——12 维刻度的价值本来就建立在<strong>长期追踪与复习</strong>上。"你的推理能力最近 6 个月变化曲线"应该是你比 Brilliant 做得更好的地方，而不是更差的地方。</p>
+</div>
+
+<h2 id="s9"><span class="num">09</span>数据陷阱与信息空白</h2>
+
+<h3>三个必须避开的伪数据来源</h3>
+
+<p>搜索 "Brilliant 评测" 时会大量出现 AI 内容农场（canvasbusinessmodel.com、yespress.io、grokipedia、crows-eye、best-ai-tools.org）。它们的数字互相矛盾且部分明显编造：</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>常见流传数字</th><th>实际情况</th></tr></thead>
+<tbody>
+<tr><td>"ARR $220M" / "ARR $150M" / "2025订阅营收 $72M"</td><td class="nf">同一网站不同页面互相矛盾，无一手来源</td></tr>
+<tr><td>"3.8M / 600K 付费用户"</td><td class="nf">AI 内容农场编造，官方口径仅为"数十万"</td></tr>
+<tr><td>"付费转化率 4.2%"、"churn 3.5%"、"LTV $210"、"DAU/MAU 28%"</td><td class="nf">全部无一手依据</td></tr>
+<tr><td>"估值 $760M (2021)"</td><td class="nf">与 Forge Global 记录的 $304.76M (2022-05) 不符，来源不可追溯</td></tr>
+<tr><td>"10 亿美元估值"</td><td class="nf">错误，公开记录为 $304.76M</td></tr>
+<tr><td>"3.3M monthly users"</td><td class="nf">该站自述数据"rounded for quick orientation"且需注册查看</td></tr>
+<tr><td>"100,000+ 五星评价"</td><td>官网营销口径（跨平台累计）。实测<strong>美国区 App Store 仅 32,900 条</strong>（Apple iTunes API），评分 4.73</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>明确的信息空白</h3>
+<p>以下问题我查证后<strong>确认无公开信息</strong>，报告中不做推测：</p>
+
+<ul>
+<li>Hint 一次给几个、是否可逐级展开、<strong>是否付费</strong>（间接证据倾向免费）</li>
+<li>单个 lesson 的官方典型时长</li>
+<li>联赛排名是全球还是好友（30 人规模更像混合分组，但官方未明示）</li>
+<li>广告的具体形态、频次、广告主</li>
+<li>免费版 Koji preview 的具体额度</li>
+<li>付费转化率、留存率、ARPU、LTV/CAC（官方帮助页自己承认不公开）</li>
+<li>Brilliant 对 <strong>Coursera / Duolingo</strong> 的官方批评文章——<strong>确认不存在</strong>。官方对比仅覆盖 Khan Academy / IXL / AoPS / Prodigy 四家</li>
+<li>MIT 或任何大学对 Brilliant 的评估或推荐</li>
+<li>Lucid / MindYourDecisions 与 Brilliant 的直接对比（真实空白）</li>
+</ul>
+
+<h3>方法论声明</h3>
+<p>本报告的课程清单、课时名称、交互机制、免费版规则、定价、留存机制<strong>全部来自 brilliant.org 页面直接抓取</strong>（含 68 个课程页 HTML 内嵌 JSON 逐页解析）。融资数据来自 Forge Global。用户评论来自 App Store / Trustpilot / BBB 官方档案 / Hacker News / Reddit 一手引述，第三方评测文章（Brighterly、Nibble、Headway、Coddy）均为竞品营销内容，其批评意见仅采信可溯源到一手渠道的部分。</p>
+
+</div>
+</body>
+</html>
