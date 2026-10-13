@@ -9,9 +9,12 @@
 
 const app = getApp();
 const { FALLACIES, computeFingerprint, describePattern } = require('../../utils/argue-engine.js');
+const argFw = require('../../utils/arg-framework.js');
+const troll = require('../../utils/troll-screen.js');
 const soloBank = require('../../data/levels.js');
 const rotationBank = require('../../data/rotation-bank.js');
 const versusBank = require('../../data/versus-bank.js');
+const extendedBank = require('../../data/extended-bank.js');
 
 Page({
   data: {
@@ -34,6 +37,25 @@ Page({
     fallacyOptions: Object.values(FALLACIES).map(f => ({
       key: f.key, name: f.name, group: f.group,
     })),
+
+    // ===== v2.1 新增：训练层专属模块 =====
+    // ARG 只在训练层与月测出现，首测禁用（见 arg-framework.argEnabledFor）
+    trainingMode: 'daily',        // daily | arg | troll
+    argEnabled: argFw.argEnabledFor('train'),
+
+    // ARG 模块
+    argItem: null,
+    argOptions: argFw.ARG_LIST.map(s => ({
+      key: s.key, name: s.name, question: s.question,
+    })),
+    argPick: null,
+    argResult: null,
+
+    // 杠精模块
+    trollItem: null,
+    trollPick: null,
+    trollOptions: [],
+    trollResult: null,
   },
 
   onShow() {
@@ -131,6 +153,8 @@ Page({
     }
     for (const q of versusBank.questions) pool.push({ ...q, levelId: 0, bank: 'versus' });
     for (const q of rotationBank.questions) pool.push({ ...q, levelId: 0, bank: 'rotation' });
+    // v2.1：纳入新维度题库（以偏概全/转移话题/背景绝对化）
+    for (const q of extendedBank.questions) pool.push({ ...q, levelId: 0, bank: 'extended' });
 
     // 优先未做过的题；全做过则退回全池
     let candidates = pool.filter(q => !answeredIds.has(q.id));
@@ -204,8 +228,19 @@ Page({
     });
   },
 
+  onStartMode() {
+    this.loadStats();
+    this.loadDailyQuestions();
+    this.setData({ trainingMode: 'daily', argItem: null, trollItem: null });
+  },
+
   onStart() {
-    this.setData({ started: true, currentQuestion: this.dailySet[0], currentIndex: 0 });
+    this.setData({
+      trainingMode: 'daily',
+      started: true,
+      currentQuestion: this.dailySet[0],
+      currentIndex: 0,
+    });
   },
 
   onCardTap(e) {
@@ -245,6 +280,172 @@ Page({
     });
 
     this.setData({ submitted: true, result, feedback });
+  },
+
+  // ================= v2.1 新增：ARG 训练 =================
+
+  onSwitchArg() {
+    const item = extendedBank.argTraining[
+      Math.floor(Math.random() * extendedBank.argTraining.length)
+    ];
+    this.setData({
+      trainingMode: 'arg',
+      argItem: item,
+      argPick: null,
+      argResult: null,
+      started: false,
+    });
+  },
+
+  onArgPick(e) {
+    if (this.data.argResult) return;
+    this.setData({ argPick: e.currentTarget.dataset.key });
+  },
+
+  onArgSubmit() {
+    const { argItem, argPick } = this.data;
+    if (!argPick || !argItem) return;
+
+    // 先按题目给出的线索构造判定输入，再让框架算
+    const evaluation = argFw.evaluateARG({
+      // ARG 的三关线索直接取自题目标注
+      opinions: argPick === 'A' ? [argItem.premise] : [],
+      facts: argPick === 'A' ? [] : [argItem.premise],
+      premiseCount: 1,
+      linksToConclusion: argPick !== 'R',
+      staysOnTopic: argPick !== 'R',
+      usesProbabilityAsCertain: argPick === 'G',
+      hasCounterExample: argPick !== 'G',
+      hiddenPremises: argItem.hiddenPremise ? 1 : 0,
+    });
+
+    const feedback = argFw.buildARGTrainingFeedback(evaluation);
+    const correct = argPick === argItem.arg;
+
+    // 计入日志：按 ARG 维度，不按 15 维
+    app.addLog({
+      ts: Date.now(),
+      qid: argItem.id,
+      levelId: 0,
+      argDimension: argItem.arg,
+      argPicked: argPick,
+      argCorrect: correct,
+      fallacyKey: null,
+      correct: correct,
+      fellInto: !correct,
+      mode: 'train_arg',
+      durationMs: 0,
+    });
+
+    this.setData({
+      argResult: {
+        correct,
+        expected: argItem.arg,
+        expectedName: argFw.ARG_STANDARDS[argItem.arg].name,
+        feedback,
+        hiddenPremise: argItem.hiddenPremise,
+      },
+    });
+  },
+
+  /** ARG 训练自检模式 —— 课程明确说四问也用于自检 */
+  onArgSelfCheck() {
+    const r = troll.selfCheck({
+      hasReason: this.data.argPick !== null,
+      reasonVerifiable: this.data.argPick === 'A',
+      reasonRelevant: this.data.argPick !== 'R',
+      reasoningOneSided: this.data.argPick !== 'G',
+    });
+    wx.showModal({
+      title: '自检',
+      content: r.text,
+      showCancel: false,
+      confirmText: '知道了',
+    });
+  },
+
+  // ================= v2.1 新增：杠精应对 =================
+
+  onSwitchTroll() {
+    const item = extendedBank.trollTraining[
+      Math.floor(Math.random() * extendedBank.trollTraining.length)
+    ];
+    this.setData({
+      trainingMode: 'troll',
+      trollItem: item,
+      trollPick: null,
+      trollResult: null,
+      started: false,
+      // 策略选项按题目所在的关卡动态生成
+      trollOptions: this.buildTrollOptions(item),
+    });
+  },
+
+  /** 根据失守关卡生成可选策略 */
+  buildTrollOptions(item) {
+    const check = troll.CHECKS.find(c => c.key === item.stopAt);
+    if (!check) return [];
+    // 第3关有双分支，按题目指定的分支取策略集
+    if (check.branches) {
+      const branch = check.branches.find(b => b.key === item.branch)
+        || check.branches[0];
+      return branch.strategies.map(s => ({
+        key: s.key, name: s.name, desc: s.desc,
+      }));
+    }
+    return (check.strategies || []).map(s => ({
+      key: s.key, name: s.name, desc: s.desc,
+    }));
+  },
+
+  onTrollPick(e) {
+    if (this.data.trollResult) return;
+    this.setData({ trollPick: e.currentTarget.dataset.key });
+  },
+
+  onTrollSubmit() {
+    const { trollItem, trollPick } = this.data;
+    if (!trollPick || !trollItem) return;
+
+    // 用筛查框架反推：用户在第几关停下
+    const screenResult = troll.screen({
+      hasReason: trollItem.stopAt !== 1,
+      reasonVerifiable: trollItem.stopAt !== 2,
+      reasonRelevant: trollItem.stopAt !== 3,
+      branch3: trollItem.branch,
+      reasoningOneSided: trollItem.stopAt !== 4,
+    });
+
+    const response = troll.buildResponse(screenResult);
+    const correct = trollPick === trollItem.bestStrategy;
+
+    app.addLog({
+      ts: Date.now(),
+      qid: trollItem.id,
+      levelId: 0,
+      trollStopAt: trollItem.stopAt,
+      trollBranch: trollItem.branch,
+      trollPicked: trollPick,
+      trollCorrect: correct,
+      argDimension: troll.CHECK_TO_ARG[trollItem.stopAt],
+      fallacyKey: null,
+      correct: correct,
+      fellInto: !correct,
+      mode: 'train_troll',
+      durationMs: 0,
+    });
+
+    this.setData({
+      trollResult: {
+        correct,
+        expected: trollItem.bestStrategy,
+        stopAt: trollItem.stopAt,
+        stopName: trollItem.expectedName,
+        branch: trollItem.branch,
+        response,
+        why: trollItem.why,
+      },
+    });
   },
 
   onNext() {

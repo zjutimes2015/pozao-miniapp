@@ -339,7 +339,103 @@ ok('未要求注册', true, 'app.js loadLogs 纯本地');
 ok('未收集手机号', true, 'app.json requiredPrivateInfos 为空');
 ok('sitemap 配置为 disallow all', true, '防测评内容被搜索收录');
 
-console.log('\n═══ 6. 降级链验证 ═══\n');
+console.log('\n═══ 5d. v2.1 ARG 与杠精模块边界 ═══\n');
+
+const argFw = require('../utils/arg-framework.js');
+const troll = require('../utils/troll-screen.js');
+const extBank = require('../data/extended-bank.js');
+const trainJs2 = fs.readFileSync(path.join(__dirname, '..', 'pages', 'train', 'train.js'), 'utf8');
+const soloJs2 = fs.readFileSync(path.join(__dirname, '..', 'pages', 'solo', 'solo.js'), 'utf8');
+const versusJs2 = fs.readFileSync(path.join(__dirname, '..', 'pages', 'versus', 'versus.js'), 'utf8');
+const fpJs2 = fs.readFileSync(path.join(__dirname, '..', 'pages', 'fingerprint', 'fingerprint.js'), 'utf8');
+
+// 【最重要的边界】ARG 只在训练层与月测，首测/对攻/指纹必须禁用
+ok('ARG 在首测模式禁用', argFw.argEnabledFor('solo') === false);
+ok('ARG 在对攻模式禁用', argFw.argEnabledFor('versus') === false);
+ok('ARG 在训练层启用', argFw.argEnabledFor('train') === true);
+ok('ARG 在月测启用', argFw.argEnabledFor('monthly') === true);
+
+// 页面层面：首测/对攻/指纹页绝不能引用 ARG 模块
+ok('首测页不引用 ARG 模块', !soloJs2.includes('arg-framework'));
+ok('对攻页不引用 ARG 模块', !versusJs2.includes('arg-framework'));
+ok('指纹页不引用 ARG 模块', !fpJs2.includes('arg-framework'));
+ok('训练页引用 ARG 模块', trainJs2.includes('arg-framework'));
+ok('训练页引用杠精模块', trainJs2.includes('troll-screen'));
+
+// ARG 三维定义完整
+ok('ARG 三维齐全', argFw.ARG_LIST.length === 3
+  && ['A', 'R', 'G'].every(k => argFw.ARG_STANDARDS[k]));
+ok('ARG 每维都有检查项', argFw.ARG_LIST.every(s => s.checks.length >= 3));
+
+// 15 维全部映射到 ARG（engine 已在文件顶部声明）
+const allKeys = engine.FALLACY_LIST.map(f => f.key);
+const mapped = Object.keys(argFw.ARG_MAPPING);
+ok('15 维全部映射到 ARG', mapped.length === allKeys.length,
+  `映射 ${mapped.length} / 维度 ${allKeys.length}`);
+ok('ARG 映射无无效键', mapped.every(k => allKeys.includes(k)));
+
+// 杠精四关
+ok('杠精四关齐全', troll.CHECKS.length === 4
+  && [1, 2, 3, 4].every(i => troll.CHECKS.some(c => c.key === i)));
+ok('第3关有双分支', troll.CHECKS.find(c => c.key === 3).branches.length === 2);
+ok('杠精四关均映射到 ARG',
+  [1, 2, 3, 4].every(i => ['A', 'A', 'R', 'G'][i - 1] === troll.CHECK_TO_ARG[i]));
+
+// 线性通过制：第1关不过时不应暴露后续关卡
+const short = troll.screen({ hasReason: false, reasonRelevant: false });
+ok('杠精筛查是线性通过制', short.passedCount === 0 && short.branch3 === null);
+ok('杠精筛查四关全过', troll.screen({}).failedAt === null);
+
+// 第3关双分支策略不同
+const stRes = troll.screen({ reasonRelevant: false, branch3: 'strawman' });
+const irRes = troll.screen({ reasonRelevant: false, branch3: 'irrelevant' });
+ok('第3关两分支策略不同',
+  JSON.stringify(troll.buildResponse(stRes).strategies.map(s => s.key))
+  !== JSON.stringify(troll.buildResponse(irRes).strategies.map(s => s.key)));
+
+// 自检语义：空参数不应误报为「全部通过」
+ok('自检空参数判为未通过', troll.selfCheck({}).passed === false);
+ok('自检完整合格判为通过',
+  troll.selfCheck({ hasReason: true, reasonVerifiable: true, reasonRelevant: true, reasoningOneSided: false }).passed === true);
+
+// 扩展题库
+ok('扩展题库 12 题', extBank.questions.length === 12);
+ok('新三维各有 4 题',
+  ['hasty_generalization', 'red_herring', 'over_generalization']
+    .every(k => extBank.questions.filter(q => q.fallacyKey === k).length === 4));
+ok('扩展题全部标注 ARG',
+  extBank.questions.every(q => q.arg && ['A', 'R', 'G'].includes(q.arg)));
+ok('杠精素材 5 条', extBank.trollTraining.length === 5);
+ok('杠精素材含双分支', extBank.trollTraining.some(t => t.branch === 'strawman')
+  && extBank.trollTraining.some(t => t.branch === 'irrelevant'));
+
+// 训练页接入新题库
+ok('训练页接入扩展题库', trainJs2.includes('extended-bank'));
+
+// ARG 反馈不得使用积分诱导（Deci et al. 1999：预期型物质奖励挤出动机）
+const argFb = argFw.buildARGTrainingFeedback(
+  argFw.evaluateARG({ opinions: ['x'], facts: [], premiseCount: 1 })
+);
+ok('ARG 反馈不含积分诱导', !/积分|得分奖励|奖励/.test(argFb.text), argFb.text);
+
+console.log('\n═══ 5e. 15 维模型完整性 ═══\n');
+
+ok('共 15 类谬误', engine.FALLACY_LIST.length === 15,
+  `${engine.FALLACY_LIST.length}`);
+ok('id 1-15 连续', engine.FALLACY_LIST.every((f, i) => f.id === i + 1));
+
+const groupCount = {};
+engine.FALLACY_LIST.forEach(f => {
+  groupCount[f.group] = (groupCount[f.group] || 0) + 1;
+});
+const gVals = Object.values(groupCount);
+ok('三组极差 ≤ 2（分组均衡）', Math.max(...gVals) - Math.min(...gVals) <= 2,
+  JSON.stringify(groupCount));
+console.log(`  分组分布：${JSON.stringify(groupCount)}`);
+
+ok('三个新增维度定义完整',
+  ['hasty_generalization', 'red_herring', 'over_generalization']
+    .every(k => engine.FALLACIES[k] && engine.FALLACIES[k].why && engine.FALLACIES[k].form));
 
 // 断网/无云函数时：本地仍能出指纹
 const localFp = engine.computeFingerprint(logs);

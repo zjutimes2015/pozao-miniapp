@@ -223,17 +223,42 @@ assert('答错时引导而非指责', fbWrong.tone === 'redirect', fbWrong.text)
 assert('答错反馈不含「你错了」', !fbWrong.text.includes('你错了'), fbWrong.text);
 assert('反馈文案过合规检查', compliance.checkText(fbRight.text).safe === true);
 
-console.log('\n═══ 8. 12 维模型完整性 ═══\n');
+console.log('\n═══ 8. 15 维模型完整性 ═══\n');
 
-assert('共 12 类谬误', engine.FALLACY_LIST.length === 12,
+assert('共 15 类谬误', engine.FALLACY_LIST.length === 15,
   `${engine.FALLACY_LIST.length}`);
-assert('三组各 4 类',
-  engine.FALLACY_LIST.filter(f => f.group === '形式').length === 4 &&
-  engine.FALLACY_LIST.filter(f => f.group === '论证').length === 4 &&
-  engine.FALLACY_LIST.filter(f => f.group === '语义').length === 4);
-assert('id 1-12 连续',
+
+// v2.1 后分组为 4/6/5，极差必须 ≤2，否则聚合指纹失真
+const gCount = {};
+for (const f of engine.FALLACY_LIST) {
+  gCount[f.group] = (gCount[f.group] || 0) + 1;
+}
+console.log(`  分组分布：${JSON.stringify(gCount)}`);
+assert('形式/论证/语义三组齐全',
+  !!gCount['形式'] && !!gCount['论证'] && !!gCount['语义'],
+  JSON.stringify(gCount));
+const gVals = Object.values(gCount);
+assert('三组极差 ≤ 2', Math.max(...gVals) - Math.min(...gVals) <= 2,
+  `极差 ${Math.max(...gVals) - Math.min(...gVals)}：${JSON.stringify(gCount)}`);
+assert('id 1-15 连续',
   engine.FALLACY_LIST.every((f, i) => f.id === i + 1));
 assert('每类都有 why 说明', engine.FALLACY_LIST.every(f => f.why && f.why.length > 5));
+assert('每类都有 form 表达', engine.FALLACY_LIST.every(f => f.form && f.form.length > 3));
+
+// v2.1 新增三类必须有清晰定义
+assert('以偏概全定义含样本概念',
+  engine.FALLACIES.hasty_generalization.why.includes('样本'));
+assert('转移话题定义含议题概念',
+  engine.FALLACIES.red_herring.why.includes('议题'));
+assert('背景绝对化定义含概率概念',
+  engine.FALLACIES.over_generalization.why.includes('概率'));
+
+// 形式组必须仍为 4 类且可真值表验证
+assert('形式组仍为 4 类',
+  engine.FALLACY_LIST.filter(f => f.group === '形式').length === 4);
+assert('新增三类不在形式组',
+  ['hasty_generalization', 'red_herring', 'over_generalization']
+    .every(k => engine.FALLACIES[k].group !== '形式'));
 
 // ============ 结果 ============
 console.log(`\n${'═'.repeat(46)}`);

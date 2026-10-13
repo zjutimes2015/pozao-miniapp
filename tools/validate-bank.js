@@ -17,7 +17,9 @@ const compliance = require('../utils/compliance.js');
 const soloBank = require('../data/levels.js');
 const versusBank = require('../data/versus-bank.js');
 const rotationBank = require('../data/rotation-bank.js');
+const extBank = require('../data/extended-bank.js');
 const plan = require('../data/bank-plan.js');
+const argFw = require('../utils/arg-framework.js');
 
 let errors = [];
 let warnings = [];
@@ -48,13 +50,18 @@ for (const q of versusBank.questions) {
 for (const q of rotationBank.questions) {
   allQuestions.push({ ...q, levelId: 0, scene: q.scene, bank: 'rotation' });
 }
+// v2.1：扩展题库（新增三维各 4 题）
+for (const q of extBank.questions) {
+  allQuestions.push({ ...q, levelId: 0, scene: q.scene, bank: 'extended' });
+}
 
 console.log('\n═══ 题库规模 ═══\n');
-ok('叙事题 15 道', soloBank.levels.reduce((s, l) => s + l.questions.length, 0) === 15,
-  `${soloBank.levels.reduce((s, l) => s + l.questions.length, 0)}`);
+const soloCount = soloBank.levels.reduce((s, l) => s + l.questions.length, 0);
+ok('叙事题 15 道', soloCount === 15, `${soloCount}`);
 ok('对攻题 30 道', versusBank.questions.length === 30, `${versusBank.questions.length}`);
 ok('轮换题 20 道', rotationBank.questions.length === 20, `${rotationBank.questions.length}`);
-ok('总计 65 道', allQuestions.length === 65, `${allQuestions.length}`);
+ok('扩展题 12 道（v2.1 新增三维）', extBank.questions.length === 12, `${extBank.questions.length}`);
+ok('总计 77 道', allQuestions.length === 77, `${allQuestions.length}`);
 ok('叙事题共 5 关', soloBank.levels.length === 5);
 
 console.log('\n═══ 1. 合规检查（禁用词必须为 0） ═══\n');
@@ -79,8 +86,19 @@ for (const lv of soloBank.levels) {
   scanText(lv.name, `level${lv.id}.name`);
   scanText(lv.scene, `level${lv.id}.scene`);
 }
+// ARG 与杠精素材同样要过合规
+for (const a of extBank.argTraining) {
+  scanText(a.prompt, `${a.id}.prompt`);
+  scanText(a.premise, `${a.id}.premise`);
+  scanText(a.conclusion, `${a.id}.conclusion`);
+  scanText(a.prompt, `${a.id}.hiddenPremise`);
+}
+for (const t of extBank.trollTraining) {
+  scanText(t.dialog, `${t.id}.dialog`);
+  scanText(t.why, `${t.id}.why`);
+}
 
-ok('全部 65 题文本无禁用词', violations.length === 0,
+ok('全部题库文本无禁用词', violations.length === 0,
   violations.slice(0, 5).map(v => `${v.where}:${v.words}`).join(' | '));
 
 console.log('\n═══ 2. 题目完整性 ═══\n');
@@ -169,7 +187,7 @@ ok('每维至少 3 题（minSamples 门槛）', missing.length === 0,
   missing.map(f => `${f.name}=${counts[f.key] || 0}`).join(','));
 
 const usedKeys = Object.keys(counts);
-ok('覆盖全部 12 类谬误', usedKeys.length === 12, `${usedKeys.length} 类`);
+ok('覆盖全部 15 类谬误', usedKeys.length === 15, `${usedKeys.length} 类`);
 
 // 分组均衡：直接影响聚合指纹的可靠性
 const groupCounts = {};
@@ -231,12 +249,54 @@ ok('题目不含说教式表达', preachy.length === 0, preachy.join(','));
 const noScene = allQuestions.filter(q => !q.scene);
 ok('每题都有场景标注', noScene.length === 0, noScene.map(q => q.id).join(','));
 
-console.log('\n═══ 8. 对攻题特殊要求 ═══\n');
+console.log('\n═══ 9. 对攻题特殊要求 ═══\n');
 
 // 对攻题需要断点更隐蔽（why 更长，说明更详细）
 const shortWhy = versusBank.questions.filter(q => q.breakpoint.why.length < 40);
 ok('对攻题 why 至少 40 字（便于两人讨论）', shortWhy.length === 0,
   shortWhy.map(q => q.id).join(','));
+
+console.log('\n═══ 10. v2.1 新增校验 ═══\n');
+
+// 扩展题必须标注 ARG，且与映射表一致
+const argMismatch = extBank.questions.filter(q =>
+  !q.arg || q.arg !== argFw.ARG_MAPPING[q.fallacyKey]
+);
+ok('扩展题 ARG 标注与映射表一致', argMismatch.length === 0,
+  argMismatch.map(q => q.id).join(','));
+
+// 全部 15 维必须在 ARG 映射表中有归属
+const unmapped = FALLACY_LIST.filter(f => !argFw.ARG_MAPPING[f.key]);
+ok('15 维全部映射到 ARG', unmapped.length === 0,
+  unmapped.map(f => f.name).join(','));
+
+// ARG 三关分布应均衡（否则训练会偏向某一关）
+const argDist = {};
+extBank.questions.forEach(q => { argDist[q.arg] = (argDist[q.arg] || 0) + 1; });
+console.log(`  ARG 分布：${JSON.stringify(argDist)}`);
+
+// 杠精素材：stopAt 必须落在失守关，第3关必须有分支
+const trollBad = extBank.trollTraining.filter(t =>
+  !(t.stopAt >= 1 && t.stopAt <= 4) ||
+  (t.stopAt === 3 && !['strawman', 'irrelevant'].includes(t.branch)) ||
+  !t.bestStrategy
+);
+ok('杠精素材结构有效', trollBad.length === 0,
+  trollBad.map(t => t.id).join(','));
+
+// 杠精素材应覆盖多个关卡（不能全停在同一关）
+const stopDist = {};
+extBank.trollTraining.forEach(t => { stopDist[t.stopAt] = (stopDist[t.stopAt] || 0) + 1; });
+console.log(`  失守关分布：${JSON.stringify(stopDist)}`);
+ok('杠精素材覆盖至少 4 个关卡', Object.keys(stopDist).length >= 4,
+  JSON.stringify(stopDist));
+
+// ARG 训练素材
+ok('ARG 训练素材每条都有目标维度',
+  extBank.argTraining.every(a => a.arg && ['A', 'R', 'G'].includes(a.arg)));
+ok('ARG 训练素材覆盖三关',
+  new Set(extBank.argTraining.map(a => a.arg)).size === 3,
+  `${new Set(extBank.argTraining.map(a => a.arg)).size} 关`);
 
 console.log('\n═══ 9. 轮换题特殊要求 ═══\n');
 

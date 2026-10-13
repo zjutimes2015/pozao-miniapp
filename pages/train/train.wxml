@@ -1,6 +1,19 @@
 <view class="page">
+  <!-- 训练模式切换（v2.1：三个模式，ARG 仅此处可见） -->
+  <view class="mode-switch">
+    <view class="mode {{trainingMode === 'daily' ? 'mode-active' : ''}}" bindtap="onStartMode">
+      <text class="mode-text">每日三题</text>
+    </view>
+    <view class="mode {{trainingMode === 'arg' ? 'mode-active' : ''}}" bindtap="onSwitchArg">
+      <text class="mode-text">论证质量</text>
+    </view>
+    <view class="mode {{trainingMode === 'troll' ? 'mode-active' : ''}}" bindtap="onSwitchTroll">
+      <text class="mode-text">怎么回</text>
+    </view>
+  </view>
+
   <!-- 今日概览 -->
-  <view class="header">
+  <view class="header" wx:if="{{trainingMode === 'daily'}}">
     <view class="today-row">
       <text class="today-label">今日</text>
       <text class="today-count">{{todayDone}} / {{todayTarget}}</text>
@@ -77,7 +90,7 @@
   </view>
 
   <!-- 能力概览：不做进度条，只做刻度列表 -->
-  <view class="section" wx:if="{{!started && weakList.length}}">
+  <view class="section" wx:if="{{trainingMode === 'daily' && !started && weakList.length}}">
     <text class="section-title">当前短板</text>
     <view class="item" wx:for="{{weakList}}" wx:key="name">
       <text class="item-name">{{item.name}}</text>
@@ -88,7 +101,7 @@
     </view>
   </view>
 
-  <view class="section" wx:if="{{!started && strongList.length}}">
+  <view class="section" wx:if="{{trainingMode === 'daily' && !started && strongList.length}}">
     <text class="section-title">当前强项</text>
     <view class="item" wx:for="{{strongList}}" wx:key="name">
       <text class="item-name">{{item.name}}</text>
@@ -99,7 +112,117 @@
     </view>
   </view>
 
-  <view class="pattern" wx:if="{{!started && pattern}}">
+  <view class="pattern" wx:if="{{trainingMode === 'daily' && !started && pattern}}">
     <text class="pattern-text">{{pattern}}</text>
+  </view>
+
+  <!-- ========== v2.1 ARG 论证质量模块（仅训练层与月测） ========== -->
+  <view wx:if="{{trainingMode === 'arg' && argItem}}">
+    <view class="module-tag">论证质量 · 三关</view>
+
+    <view class="arg-scene">{{argItem.scene}}</view>
+
+    <view class="arg-block">
+      <view class="arg-label">理由</view>
+      <view class="arg-text">{{argItem.premise}}</view>
+    </view>
+    <view class="arg-block">
+      <view class="arg-label">结论</view>
+      <view class="arg-text">{{argItem.conclusion}}</view>
+    </view>
+
+    <view class="tip">
+      <text class="tip-text">这个论证在哪一关没过去？</text>
+    </view>
+
+    <view class="options" wx:if="{{!argResult}}">
+      <view
+        wx:for="{{argOptions}}"
+        wx:key="key"
+        class="option {{argPick === item.key ? 'option-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onArgPick"
+      >
+        <text class="option-key">{{item.key}}</text>
+        <view class="option-body">
+          <text class="option-name">{{item.name}}</text>
+          <text class="option-desc">{{item.question}}</text>
+        </view>
+      </view>
+    </view>
+
+    <button wx:if="{{!argResult}}" class="btn-primary {{argPick ? '' : 'btn-disabled'}}" bindtap="onArgSubmit">看判定</button>
+
+    <view class="feedback" wx:if="{{argResult}}">
+      <view class="feedback-head {{argResult.correct ? 'head-right' : 'head-redirect'}}">
+        {{argResult.correct ? '判断正确' : '这一关是' + argResult.expectedName}}
+      </view>
+      <view class="feedback-text">{{argResult.feedback.text}}</view>
+
+      <view class="hidden-premise" wx:if="{{argResult.hiddenPremise}}">
+        <view class="truth-label">被藏起来的理由</view>
+        <view class="truth-text">{{argResult.hiddenPremise}}</view>
+      </view>
+
+      <view class="arg-detail">
+        <text class="arg-detail-text">{{argResult.feedback.hint}}</text>
+      </view>
+
+      <button class="btn-secondary" bindtap="onSwitchArg">换一题</button>
+      <button class="btn-ghost" bindtap="onArgSelfCheck">自检我的说法</button>
+    </view>
+  </view>
+
+  <!-- ========== v2.1 杠精应对模块 ========== -->
+  <view wx:if="{{trainingMode === 'troll' && trollItem}}">
+    <view class="module-tag">怎么回 · 筛查四关</view>
+
+    <view class="arg-scene">{{trollItem.scene}}</view>
+
+    <view class="dialog">{{trollItem.dialog}}</view>
+
+    <view class="tip">
+      <text class="tip-text">对方停在第几关？你该怎么回？</text>
+    </view>
+
+    <view class="options" wx:if="{{!trollResult}}">
+      <view
+        wx:for="{{trollOptions}}"
+        wx:key="key"
+        class="option {{trollPick === item.key ? 'option-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onTrollPick"
+      >
+        <text class="option-name">{{item.name}}</text>
+        <text class="option-desc">{{item.desc}}</text>
+      </view>
+    </view>
+
+    <button wx:if="{{!trollResult}}" class="btn-primary {{trollPick ? '' : 'btn-disabled'}}" bindtap="onTrollSubmit">看建议</button>
+
+    <view class="feedback" wx:if="{{trollResult}}">
+      <view class="feedback-head {{trollResult.correct ? 'head-right' : 'head-redirect'}}">
+        {{trollResult.correct ? '应对正确' : '停在第' + trollResult.stopAt + '关：' + trollResult.stopName}}
+      </view>
+      <view class="feedback-text">{{trollResult.why}}</view>
+
+      <view class="strategy-list" wx:if="{{trollResult.response.strategies.length}}">
+        <view class="strategy" wx:for="{{trollResult.response.strategies}}" wx:key="key">
+          <text class="strategy-name">{{item.name}}</text>
+          <text class="strategy-desc">{{item.desc}}</text>
+          <view class="strategy-template" wx:if="{{item.template}}">
+            <text>{{item.template}}</text>
+          </view>
+          <view class="strategy-steps" wx:if="{{item.steps}}">
+            <view class="step" wx:for="{{item.steps}}" wx:for-item="s" wx:key="step">
+              <text class="step-num">{{s.step}}</text>
+              <text class="step-text">{{s.example}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-secondary" bindtap="onSwitchTroll">换一段</button>
+    </view>
   </view>
 </view>
