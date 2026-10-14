@@ -625,6 +625,104 @@ ok('分享文案均过合规扫描',
   shareTitles.every(s => compliance.checkText(s.title).safe),
   shareTitles.filter(s => !compliance.checkText(s.title).safe).map(s => s.pg).join(','));
 
+console.log('\n═══ 5h. 反馈闭环 ═══\n');
+
+const feedbackLib = require('../utils/feedback.js');
+const saveFbSrc = fs.readFileSync(
+  path.join(__dirname, '..', 'cloudfunctions', 'saveFeedback', 'index.js'), 'utf8');
+
+// 1) 类型白名单：恰好四个，且与云函数一致
+ok('反馈类型恰好 4 种',
+  feedbackLib.TYPE_KEYS.length === 4, feedbackLib.TYPE_KEYS.join(','));
+ok('类型值符合需求（bug/suggestion/question/other）',
+  JSON.stringify(feedbackLib.TYPE_KEYS) ===
+  JSON.stringify(['bug', 'suggestion', 'question', 'other']));
+
+// 2) 前后端约束必须逐项一致 —— 不一致会出现「前端过了后端拒」的错位
+const limitKeys = ['content', 'contact', 'pagePath', 'sessionId', 'typeCode', 'source'];
+let limitMismatch = [];
+for (const k of limitKeys) {
+  const m = saveFbSrc.match(new RegExp(k + ':\\s*(\\d+)'));
+  const cfLimit = m ? parseInt(m[1], 10) : null;
+  if (cfLimit !== feedbackLib.LIMITS[k]) {
+    limitMismatch.push(`${k}: 前端${feedbackLib.LIMITS[k]}/云端${cfLimit}`);
+  }
+}
+ok('前后端字段上限完全一致', limitMismatch.length === 0, limitMismatch.join(' | '));
+
+// 3) OPENID 必须服务端获取，前端不得传
+ok('云函数从 getWXContext 取 OPENID',
+  /getWXContext\(\)/.test(saveFbSrc) && /OPENID/.test(saveFbSrc));
+ok('云函数忽略前端传入的 openid',
+  // 事件里解构出的变量列表不能包含 openid
+  !/const\s*\{[^}]*\bopenid\b[^}]*\}\s*=\s*event/.test(saveFbSrc),
+  '出现 event.openid 解构即为高危：可伪造他人身份');
+ok('写入文档时 openid 来自服务端变量',
+  /openid:\s*OPENID/.test(saveFbSrc));
+ok('前端不传 openid',
+  !/openid\s*:/.test(fs.readFileSync(path.join(__dirname, '..', 'utils', 'feedback.js'), 'utf8')),
+  'utils/feedback.js 不应出现 openid 字段');
+
+// 4) 内容非空 + 类型白名单的校验必须两端都在
+const emptyCheck = feedbackLib.validateFeedback({ feedbackType: 'bug', content: '' });
+ok('空内容被拒（前端）', emptyCheck.ok === false && !!emptyCheck.errors.content);
+const wrongType = feedbackLib.validateFeedback({ feedbackType: 'x', content: '内容' });
+ok('非法类型被拒（前端）', wrongType.ok === false && !!wrongType.errors.feedbackType);
+ok('云函数也校验内容非空',
+  /EMPTY_CONTENT/.test(saveFbSrc) && /EMPTY_CONTENT/.test(saveFbSrc));
+ok('云函数也做类型白名单校验',
+  /INVALID_TYPE/.test(saveFbSrc) && /ALLOWED_TYPES\.includes/.test(saveFbSrc));
+
+// 5) 默认状态字段：status/category/priority/createdAt/updatedAt
+for (const [field, value] of [['status', 'new'], ['category', 'unclassified'], ['priority', 'normal']]) {
+  ok(`默认 ${field}=${value}`,
+    new RegExp(`${field}:\\s*'${value}'`).test(saveFbSrc), `缺 ${field}=${value}`);
+}
+ok('createdAt 与 updatedAt 用 serverDate',
+  /createdAt:\s*db\.serverDate\(\)/.test(saveFbSrc) &&
+  /updatedAt:\s*db\.serverDate\(\)/.test(saveFbSrc));
+
+// 6) 集合名正确
+ok('集合名为 feedback_items',
+  /COLLECTION\s*=\s*'feedback_items'/.test(saveFbSrc));
+
+// 7) 限流存在（防止刷库）
+ok('云函数含限流保护',
+  /RATE_LIMIT_MS/.test(saveFbSrc) && /checkRate/.test(saveFbSrc));
+
+// 8) 页面已注册 + 两个入口都在
+const appJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'app.json'), 'utf8'));
+ok('feedback 页已注册', appJson.pages.includes('pages/feedback/feedback'),
+  appJson.pages.join(','));
+for (const pg of ['fingerprint', 'profile']) {
+  const js = fs.readFileSync(path.join(__dirname, '..', 'pages', pg, `${pg}.js`), 'utf8');
+  const wxml = fs.readFileSync(path.join(__dirname, '..', 'pages', pg, `${pg}.wxml`), 'utf8');
+  ok(`${pg} 页有反馈跳转方法`, js.includes('onFeedback'));
+  ok(`${pg} 页模板绑定了反馈入口`, wxml.includes('onFeedback'));
+}
+
+// 9) 反馈页核心元素齐全（对照设计稿）
+const fbWxml = fs.readFileSync(path.join(__dirname, '..', 'pages', 'feedback', 'feedback.wxml'), 'utf8');
+ok('反馈页含四类型选择', (fbWxml.match(/type-card/g) || []).length >= 1 && feedbackLib.FEEDBACK_TYPES.length === 4);
+ok('反馈页 content 绑定了 maxlength', fbWxml.includes('maxlength="{{contentLimit}}"'));
+ok('反馈页有字数计数', fbWxml.includes('contentCount'));
+ok('反馈页联系方式可空（非 required）',
+  fbWxml.includes('bindinput="onContactInput"') && !/contact.*required/.test(fbWxml));
+
+// 10) 清空数据时必须一并清掉待传队列
+const profileJs = fs.readFileSync(path.join(__dirname, '..', 'pages', 'profile', 'profile.js'), 'utf8');
+ok('清空数据会清掉待传反馈队列',
+  /removeStorageSync\(PENDING_KEY\)/.test(profileJs),
+  '否则用户以为全清了，待传反馈仍会补传');
+
+// 11) 反馈内容也要过合规（用户输入不豁免）
+ok('用户输入过合规过滤',
+  /checkText/.test(fs.readFileSync(path.join(__dirname, '..', 'utils', 'feedback.js'), 'utf8')),
+  '用户自己写违规内容入库，审核时整站被扫');
+
+console.log(`\n  反馈类型：${feedbackLib.TYPE_KEYS.join(' / ')}`);
+console.log(`  字段上限：${limitKeys.map(k => `${k}=${feedbackLib.LIMITS[k]}`).join(' · ')}`);
+
 console.log('\n═══ 5e. 15 维模型完整性 ═══\n');
 
 ok('共 15 类谬误', engine.FALLACY_LIST.length === 15,

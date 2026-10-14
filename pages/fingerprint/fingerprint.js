@@ -257,6 +257,17 @@ Page({
   },
 
   /** 发起对攻 */
+  /**
+   * 反馈入口 —— 带上当前指纹短代码，便于后台定位是哪类结果被质疑
+   */
+  onFeedback() {
+    const code = this.data.code || '';
+    const q = code ? `&typeCode=${code}` : '';
+    wx.navigateTo({
+      url: `/pages/feedback/feedback?from=fingerprint&pagePath=fingerprint${q}`,
+    });
+  },
+
   onVersus() {
     if (!this.data.enough) {
       wx.showToast({ title: '样本不足，先多闯几关', icon: 'none' });

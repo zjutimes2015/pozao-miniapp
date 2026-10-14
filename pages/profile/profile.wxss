@@ -115,3 +115,11 @@
   color: #5F5E5A;
   line-height: 1.7;
 }
+.menu-badge {
+  font-size: 21rpx;
+  color: #854F0B;
+  background: #FAEEDA;
+  border-radius: 20rpx;
+  padding: 4rpx 14rpx;
+  margin-right: 12rpx;
+}

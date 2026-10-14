@@ -1,0 +1,71 @@
+<view class="page">
+  <!-- 顶部说明 -->
+  <view class="hero">
+    <text class="hero-tag">FEEDBACK</text>
+    <text class="hero-title">意见反馈</text>
+    <text class="hero-desc">写下你遇到的问题、疑问或建议。</text>
+  </view>
+
+  <!-- 反馈类型：2×2 卡片，每张带副标题 -->
+  <view class="section">
+    <text class="section-title">反馈类型</text>
+    <view class="type-grid">
+      <view
+        class="type-card {{feedbackType === item.key ? 'type-on' : ''}}"
+        wx:for="{{types}}"
+        wx:key="key"
+        bindtap="onTypeTap"
+        data-key="{{item.key}}"
+      >
+        <text class="type-label">{{item.label}}</text>
+        <text class="type-desc">{{item.desc}}</text>
+      </view>
+    </view>
+    <text class="err" wx:if="{{errors.feedbackType}}">{{errors.feedbackType}}</text>
+  </view>
+
+  <!-- 反馈内容 -->
+  <view class="section">
+    <text class="section-title">反馈内容</text>
+    <textarea
+      class="textarea"
+      value="{{content}}"
+      placeholder="请具体说说发生了什么"
+      placeholder-class="ph"
+      maxlength="{{contentLimit}}"
+      bindinput="onContentInput"
+      disable-default-padding="{{true}}"
+    />
+    <view class="count-row">
+      <text class="err" wx:if="{{errors.content}}">{{errors.content}}</text>
+      <text class="count">{{contentCount}}/{{contentLimit}}</text>
+    </view>
+  </view>
+
+  <!-- 联系方式：可选 -->
+  <view class="section">
+    <text class="section-title">联系方式</text>
+    <input
+      class="input"
+      value="{{contact}}"
+      placeholder="微信号 / 邮箱，可不填"
+      placeholder-class="ph"
+      maxlength="100"
+      bindinput="onContactInput"
+    />
+    <text class="err" wx:if="{{errors.contact}}">{{errors.contact}}</text>
+    <text class="hint">填了方便回复你，不填也能提交。</text>
+  </view>
+
+  <!-- 提交 -->
+  <view class="actions">
+    <button class="btn-primary {{submitting ? 'btn-disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '提交中' : '提交反馈'}}
+    </button>
+    <button class="btn-ghost" bindtap="onCancel">取消</button>
+  </view>
+
+  <view class="privacy-note">
+    反馈会连同你所在的页面一起提交，便于定位问题；不含你的答题记录。
+  </view>
+</view>

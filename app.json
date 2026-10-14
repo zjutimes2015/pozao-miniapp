@@ -4,7 +4,8 @@
     "pages/fingerprint/fingerprint",
     "pages/versus/versus",
     "pages/train/train",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/feedback/feedback"
   ],
   "window": {
     "backgroundTextStyle": "dark",

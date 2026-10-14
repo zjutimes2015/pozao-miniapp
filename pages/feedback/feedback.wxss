@@ -1,0 +1,207 @@
+/* feedback.wxss —— 沿用本项目配色体系
+   底 #FCFCFA · 主文字 #1C1C1A · 次级 #5F5E5A / #8B8A85
+   品牌绿 #1D9E75 · 卡片 #F4F3EF · 描边 #D3D1C7
+   反馈类型选中态用品牌绿的浅底，与全站语义一致
+*/
+
+.page {
+  min-height: 100vh;
+  background: #FCFCFA;
+  padding: 24rpx 32rpx 64rpx;
+  box-sizing: border-box;
+}
+
+/* ── 顶部说明 ── */
+.hero {
+  padding: 32rpx 8rpx 40rpx;
+}
+
+.hero-tag {
+  display: block;
+  font-size: 20rpx;
+  color: #1D9E75;
+  letter-spacing: 4rpx;
+  font-family: monospace;
+  margin-bottom: 12rpx;
+}
+
+.hero-title {
+  display: block;
+  font-size: 44rpx;
+  color: #1C1C1A;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.hero-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #8B8A85;
+  margin-top: 10rpx;
+}
+
+/* ── 分区 ── */
+.section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 26rpx;
+  color: #5F5E5A;
+  margin-bottom: 20rpx;
+}
+
+/* ── 类型卡 2×2 ── */
+.type-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.type-card {
+  width: calc(50% - 10rpx);
+  box-sizing: border-box;
+  background: #F4F3EF;
+  border: 2rpx solid transparent;
+  border-radius: 16rpx;
+  padding: 28rpx 24rpx;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.type-on {
+  background: rgba(29, 158, 117, 0.08);
+  border-color: #1D9E75;
+}
+
+.type-label {
+  display: block;
+  font-size: 30rpx;
+  color: #1C1C1A;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.type-desc {
+  display: block;
+  font-size: 22rpx;
+  color: #8B8A85;
+  line-height: 1.4;
+}
+
+.type-on .type-desc {
+  color: #0F6E56;
+}
+
+/* ── 输入区 ── */
+.textarea {
+  width: 100%;
+  height: 280rpx;
+  background: #F4F3EF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+  font-size: 27rpx;
+  color: #1C1C1A;
+  line-height: 1.6;
+}
+
+.input {
+  width: 100%;
+  height: 92rpx;
+  background: #F4F3EF;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  font-size: 27rpx;
+  color: #1C1C1A;
+}
+
+.ph {
+  color: #B4B2A9;
+}
+
+.count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+  min-height: 30rpx;
+}
+
+.count {
+  font-size: 22rpx;
+  color: #B4B2A9;
+  font-family: monospace;
+  margin-left: auto;
+}
+
+/* ── 错误与提示 ── */
+.err {
+  display: block;
+  font-size: 22rpx;
+  color: #A32D2D;
+  line-height: 1.5;
+}
+
+.count-row .err {
+  flex: 1;
+}
+
+.hint {
+  display: block;
+  font-size: 22rpx;
+  color: #B4B2A9;
+  margin-top: 10rpx;
+}
+
+/* ── 按钮 ── */
+.actions {
+  margin-top: 16rpx;
+}
+
+.btn-primary {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #1D9E75 0%, #0F6E56 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 500;
+  border: none;
+  margin-bottom: 16rpx;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+}
+
+.btn-ghost {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  background: transparent;
+  color: #8B8A85;
+  font-size: 27rpx;
+  border: none;
+}
+
+.btn-ghost::after {
+  border: none;
+}
+
+/* ── 隐私说明 ── */
+.privacy-note {
+  margin-top: 32rpx;
+  padding: 24rpx;
+  background: #F4F3EF;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  color: #8B8A85;
+  line-height: 1.6;
+}
