@@ -1,9 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="680" height="388" viewBox="0 0 680 388">
-
-<style>
-.th{font-family:var(--font-sans);font-size:13px;font-weight:500}
-.ts{font-family:var(--font-sans);font-size:11px;font-weight:400}
-.tm{font-family:var(--font-mono);font-size:10px;font-weight:400}
-</style>
-<text class="ts" x="40" y="24" fill="#5F5E5A" dominant-baseline="central">用户可见层 · TabBar 四页</text><rect x="40" y="40" width="138" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/><text class="th" x="109" y="60" fill="#042C53" text-anchor="middle" dominant-baseline="central">单闯页</text><text class="ts" x="109" y="79" fill="#185FA5" text-anchor="middle" dominant-baseline="central">五关叙事拆招</text><rect x="194" y="40" width="138" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/><text class="th" x="263" y="60" fill="#042C53" text-anchor="middle" dominant-baseline="central">对攻页</text><text class="ts" x="263" y="79" fill="#185FA5" text-anchor="middle" dominant-baseline="central">双人同题拆解</text><rect x="348" y="40" width="138" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/><text class="th" x="417" y="60" fill="#042C53" text-anchor="middle" dominant-baseline="central">训练页</text><text class="ts" x="417" y="79" fill="#185FA5" text-anchor="middle" dominant-baseline="central">每日三题 · 论证质量</text><rect x="502" y="40" width="138" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/><text class="th" x="571" y="60" fill="#042C53" text-anchor="middle" dominant-baseline="central">我的页</text><text class="ts" x="571" y="79" fill="#185FA5" text-anchor="middle" dominant-baseline="central">隐私与数据清空</text><text class="tm" x="40" y="114" fill="#8B8A85" dominant-baseline="central">PAGE-003 指纹页不在 TabBar —— 单闯五关完成后 redirectTo 跳转</text><text class="ts" x="40" y="148" fill="#5F5E5A" dominant-baseline="central">工具层 · 被依赖次数决定改动风险</text><text class="ts" x="40" y="170" fill="#8B8A85" dominant-baseline="central">模块</text><text class="ts" x="200" y="170" fill="#8B8A85" dominant-baseline="central">被依赖</text><text class="ts" x="452" y="170" fill="#8B8A85" dominant-baseline="central">次数</text><text class="ts" x="492" y="170" fill="#8B8A85" dominant-baseline="central">风险</text><text class="tm" x="40" y="196" fill="#1C1C1A" dominant-baseline="central">argue-engine</text><rect x="200" y="189" width="240" height="14" rx="7" fill="#185FA5"/><text class="tm" x="452" y="196" fill="#5F5E5A" dominant-baseline="central">6</text><text class="tm" x="492" y="196" fill="#A32D2D" dominant-baseline="central">高</text><text class="tm" x="40" y="230" fill="#1C1C1A" dominant-baseline="central">compliance</text><rect x="200" y="223" width="200" height="14" rx="7" fill="#185FA5"/><text class="tm" x="452" y="230" fill="#5F5E5A" dominant-baseline="central">5</text><text class="tm" x="492" y="230" fill="#A32D2D" dominant-baseline="central">高</text><text class="tm" x="40" y="264" fill="#1C1C1A" dominant-baseline="central">data/levels</text><rect x="200" y="257" width="160" height="14" rx="7" fill="#85B7EB"/><text class="tm" x="452" y="264" fill="#5F5E5A" dominant-baseline="central">4</text><text class="tm" x="492" y="264" fill="#854F0B" dominant-baseline="central">中</text><text class="tm" x="40" y="298" fill="#1C1C1A" dominant-baseline="central">app.js</text><rect x="200" y="291" width="120" height="14" rx="7" fill="#85B7EB"/><text class="tm" x="452" y="298" fill="#5F5E5A" dominant-baseline="central">3</text><text class="tm" x="492" y="298" fill="#854F0B" dominant-baseline="central">中</text><text class="tm" x="40" y="332" fill="#1C1C1A" dominant-baseline="central">arg-framework</text><rect x="200" y="325" width="80" height="14" rx="7" fill="#B5D4F4"/><text class="tm" x="452" y="332" fill="#5F5E5A" dominant-baseline="central">2</text><text class="tm" x="492" y="332" fill="#0F6E56" dominant-baseline="central">低</text><text class="ts" x="40" y="368" fill="#5F5E5A" dominant-baseline="central">改 argue-engine 之前先跑三套测试 —— 它牵着全部页面与测试</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="800" viewBox="0 0 1120 800">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M1 1L9 5L1 9" fill="none" stroke="#4FB79E" stroke-width="1.4" stroke-linecap="round"/>
+</marker>
+<marker id="arD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M1 1L9 5L1 9" fill="none" stroke="#E8944A" stroke-width="1.4" stroke-linecap="round"/>
+</marker>
+</defs><rect width="1120" height="800" fill="#C6F1EA"/>
+<text x="40" y="34" font-size="20" fill="#0B3B34" font-family="sans-serif" font-weight="500">《破招》功能全景 · 依赖热度</text>
+<text x="40" y="54" font-size="11" fill="#0B3B34" opacity="0.75" font-family="sans-serif">用户能碰到什么，底下由什么支撑 —— 改之前先数依赖次数，比凭感觉可靠</text>
+<text x="1080" y="34" font-size="11" fill="#0B3B34" opacity="0.6" text-anchor="end" font-family="monospace">01 / 04</text>
+<rect x="40" y="70" width="1040" height="28" rx="4" fill="#FBFCFE" opacity="0.92"/>
+<text x="56" y="88" font-size="11" fill="#0B3B34" font-family="sans-serif" dominant-baseline="central"><tspan font-weight="500">全景图</tspan> = 四页入口 + 五个工具模块 + 改动风险由「被依赖次数」决定，而不是凭印象判断。</text>
+<rect x="40" y="108" width="760" height="570" rx="4" fill="#DDF7F0" opacity="0.6" stroke="#5FC9B4" stroke-width="0.8" stroke-dasharray="5 4"/>
+<rect x="70" y="140" width="690" height="82" rx="6" fill="#EAFBF7" stroke="#5FC9B4" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
+<rect x="80" y="129" width="148" height="18" rx="9" fill="#C6F1EA" stroke="#5FC9B4" stroke-width="0.8"/>
+<text x="154" y="138" font-size="11" fill="#0E7C6B" text-anchor="middle" font-family="sans-serif" font-weight="500">用户可见层 · 四页入口</text>
+<rect x="70" y="252" width="690" height="82" rx="6" fill="#EAFBF7" stroke="#5FC9B4" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
+<rect x="80" y="241" width="148" height="18" rx="9" fill="#C6F1EA" stroke="#5FC9B4" stroke-width="0.8"/>
+<text x="154" y="250" font-size="11" fill="#0E7C6B" text-anchor="middle" font-family="sans-serif" font-weight="500">工具层 · 五个核心模块</text>
+<rect x="70" y="364" width="690" height="160" rx="6" fill="#EAFBF7" stroke="#5FC9B4" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
+<rect x="80" y="353" width="137" height="18" rx="9" fill="#C6F1EA" stroke="#5FC9B4" stroke-width="0.8"/>
+<text x="148.5" y="362" font-size="11" fill="#0E7C6B" text-anchor="middle" font-family="sans-serif" font-weight="500">依赖热度 · 改动风险</text>
+<rect x="70" y="554" width="690" height="82" rx="6" fill="#EAFBF7" stroke="#5FC9B4" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
+<rect x="80" y="543" width="170" height="18" rx="9" fill="#C6F1EA" stroke="#5FC9B4" stroke-width="0.8"/>
+<text x="165" y="552" font-size="11" fill="#0E7C6B" text-anchor="middle" font-family="sans-serif" font-weight="500">改动前必跑 · 三套测试门禁</text>
+<rect x="82" y="156" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="140" y="170" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">PAGE-001</text>
+<text x="140" y="187" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">单闯页</text>
+<text x="140" y="200" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">五关叙事拆招</text>
+<rect x="218" y="156" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="276" y="170" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">PAGE-002</text>
+<text x="276" y="187" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">对攻页</text>
+<text x="276" y="200" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">双人同题</text>
+<rect x="354" y="156" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="412" y="170" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">PAGE-003</text>
+<text x="412" y="187" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">指纹页</text>
+<text x="412" y="200" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">三组表现</text>
+<rect x="490" y="156" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="548" y="170" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">PAGE-004</text>
+<text x="548" y="187" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">训练页</text>
+<text x="548" y="200" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">三模式</text>
+<rect x="626" y="156" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="684" y="170" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">PAGE-005</text>
+<text x="684" y="187" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">我的页</text>
+<text x="684" y="200" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">隐私与清空</text>
+<rect x="82" y="268" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="140" y="282" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">RULE-005</text>
+<text x="140" y="299" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">argue-engine</text>
+<text x="140" y="312" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">判定与指纹</text>
+<rect x="218" y="268" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="276" y="282" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">RULE-011</text>
+<text x="276" y="299" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">compliance</text>
+<text x="276" y="312" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">禁用词过滤</text>
+<rect x="354" y="268" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="412" y="282" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">RULE-004</text>
+<text x="412" y="299" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">data/levels</text>
+<text x="412" y="312" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">题库四文件</text>
+<rect x="490" y="268" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="548" y="282" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">STORE-001</text>
+<text x="548" y="299" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">app.js</text>
+<text x="548" y="312" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">全局状态</text>
+<rect x="626" y="268" width="116" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="684" y="282" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">RULE-007</text>
+<text x="684" y="299" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">arg-framework</text>
+<text x="684" y="312" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">ARG 三维</text>
+<text x="92" y="396" font-size="10" fill="#1C1C1A" font-family="monospace">utils/argue-engine</text>
+<rect x="278" y="386" width="346" height="14" rx="7" fill="#EAFBF7" opacity="0.5"/>
+<rect x="278" y="386" width="346" height="14" rx="7" fill="#185FA5"/>
+<text x="692" y="397" font-size="10" fill="#5F5E5A" font-family="monospace" text-anchor="end">6 次</text>
+<text x="738" y="397" font-size="10" fill="#A32D2D" font-family="monospace" text-anchor="end">高</text>
+<text x="92" y="422" font-size="10" fill="#1C1C1A" font-family="monospace">utils/compliance</text>
+<rect x="278" y="412" width="346" height="14" rx="7" fill="#EAFBF7" opacity="0.5"/>
+<rect x="278" y="412" width="288.3333333333333" height="14" rx="7" fill="#185FA5"/>
+<text x="692" y="423" font-size="10" fill="#5F5E5A" font-family="monospace" text-anchor="end">5 次</text>
+<text x="738" y="423" font-size="10" fill="#A32D2D" font-family="monospace" text-anchor="end">高</text>
+<text x="92" y="448" font-size="10" fill="#1C1C1A" font-family="monospace">data/levels</text>
+<rect x="278" y="438" width="346" height="14" rx="7" fill="#EAFBF7" opacity="0.5"/>
+<rect x="278" y="438" width="230.66666666666666" height="14" rx="7" fill="#85B7EB"/>
+<text x="692" y="449" font-size="10" fill="#5F5E5A" font-family="monospace" text-anchor="end">4 次</text>
+<text x="738" y="449" font-size="10" fill="#854F0B" font-family="monospace" text-anchor="end">中</text>
+<text x="92" y="474" font-size="10" fill="#1C1C1A" font-family="monospace">app.js</text>
+<rect x="278" y="464" width="346" height="14" rx="7" fill="#EAFBF7" opacity="0.5"/>
+<rect x="278" y="464" width="173" height="14" rx="7" fill="#85B7EB"/>
+<text x="692" y="475" font-size="10" fill="#5F5E5A" font-family="monospace" text-anchor="end">3 次</text>
+<text x="738" y="475" font-size="10" fill="#854F0B" font-family="monospace" text-anchor="end">中</text>
+<text x="92" y="500" font-size="10" fill="#1C1C1A" font-family="monospace">utils/arg-framework</text>
+<rect x="278" y="490" width="346" height="14" rx="7" fill="#EAFBF7" opacity="0.5"/>
+<rect x="278" y="490" width="115.33333333333333" height="14" rx="7" fill="#B5D4F4"/>
+<text x="692" y="501" font-size="10" fill="#5F5E5A" font-family="monospace" text-anchor="end">2 次</text>
+<text x="738" y="501" font-size="10" fill="#0F6E56" font-family="monospace" text-anchor="end">低</text>
+<rect x="82" y="570" width="216" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="190" y="584" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">TEST-001</text>
+<text x="190" y="601" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">改判定逻辑</text>
+<text x="190" y="614" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">先跑引擎测试</text>
+<rect x="314" y="570" width="216" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="422" y="584" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">TEST-002</text>
+<text x="422" y="601" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">改题库文案</text>
+<text x="422" y="614" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">先跑题库校验</text>
+<rect x="546" y="570" width="216" height="52" rx="7" fill="#E8F8F4" stroke="#3FC7AE" stroke-width="1.2"/>
+<text x="654" y="584" font-size="10" fill="#E8944A" text-anchor="middle" font-family="monospace">TEST-003</text>
+<text x="654" y="601" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500">改页面作答</text>
+<text x="654" y="614" font-size="9" fill="#4A7A70" text-anchor="middle" font-family="sans-serif">先跑端到端</text><path d="M140 208L140 252" fill="none" stroke="#4FB79E" stroke-width="1.4" marker-end="url(#ar)"/><path d="M412 208L412 252" fill="none" stroke="#4FB79E" stroke-width="1.4" marker-end="url(#ar)"/><path d="M548 208L548 252" fill="none" stroke="#4FB79E" stroke-width="1.4" marker-end="url(#ar)"/><path d="M140 320L140 386" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M276 320L276 412" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M412 320L412 438" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M548 320L548 464" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M672 320L672 490" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M92 524L92 540L190 540L190 554" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M470 524L470 540L422 540L422 554" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/><path d="M700 524L700 540L654 540L654 554" fill="none" stroke="#E8944A" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arD)"/>
+<rect x="88" y="212" width="84" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="130" y="224" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">跳转非 TabBar</text>
+<rect x="88" y="324" width="84" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="130" y="336" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">判定不可降级</text>
+<rect x="240" y="324" width="88" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="284" y="336" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">文案必过校验</text>
+<rect x="392" y="324" width="88" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="436" y="336" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">边界代码强制</text>
+<rect x="560" y="364" width="108" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="614" y="376" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">风险由依赖数决定</text>
+<rect x="84" y="620" width="60" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="114" y="632" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">60 项</text>
+<rect x="316" y="620" width="60" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="346" y="632" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">76 项</text>
+<rect x="548" y="620" width="60" height="17" rx="8.5" fill="#FFF3E0" stroke="#F0A868" stroke-width="0.9"/>
+<text x="578" y="632" font-size="10" fill="#6B3A12" text-anchor="middle" font-family="sans-serif">81 项</text>
+<rect x="820" y="108" width="260" height="264" rx="6" fill="#FBFCFE" stroke="#D8DCE3" stroke-width="1"/>
+<line x1="820" y1="138" x2="1080" y2="138" stroke="#D8DCE3" stroke-width="1"/>
+<text x="834" y="127" font-size="12" fill="#0E7C6B" font-family="sans-serif" font-weight="500">高风险 · RULE-005</text>
+<rect x="1018" y="116" width="50" height="15" rx="7.5" fill="#F5A623"/>
+<text x="1043" y="127" font-size="9" fill="#FFFFFF" text-anchor="middle" font-family="sans-serif">被依赖 6</text><text x="834" y="156" font-size="10" fill="#5F5E5A" font-family="sans-serif">名称： 论证推理引擎</text><text x="834" y="176" font-size="10" fill="#5F5E5A" font-family="sans-serif">位置： argue-engine.js</text><text x="834" y="196" font-size="10" fill="#5F5E5A" font-family="sans-serif">所属能力： CAP-001 论证拆招测评</text><text x="834" y="216" font-size="10" fill="#5F5E5A" font-family="sans-serif">所属页面： PAGE-001 单闯页</text><text x="834" y="236" font-size="10" fill="#5F5E5A" font-family="sans-serif">触发时机： ACT-003 提交作答</text><text x="834" y="256" font-size="10" fill="#5F5E5A" font-family="sans-serif">保存位置： STORE-001 写入 pz_logs</text><text x="834" y="276" font-size="10" fill="#E8944A" font-family="sans-serif">不可降级： C-002 真值表不可交给 AI</text><text x="834" y="296" font-size="10" fill="#E8944A" font-family="sans-serif">验证路径： TEST-001 引擎测试 60 项</text>
+<rect x="820" y="386" width="260" height="278" rx="6" fill="#FBFCFE" stroke="#D8DCE3" stroke-width="1"/>
+<text x="834" y="406" font-size="12" fill="#0E7C6B" font-family="sans-serif" font-weight="500">为什么要数依赖？</text><circle cx="837" cy="426" r="3" fill="#1D9E75"/>
+<text x="846" y="429" font-size="10" fill="#5F5E5A" font-family="sans-serif">维度 12→15 那次改动</text><circle cx="837" cy="443" r="3" fill="#1D9E75"/>
+<text x="846" y="446" font-size="10" fill="#5F5E5A" font-family="sans-serif">实际炸了 7 个文件</text><circle cx="837" cy="460" r="3" fill="#1D9E75"/>
+<text x="846" y="463" font-size="10" fill="#5F5E5A" font-family="sans-serif"></text><circle cx="837" cy="477" r="3" fill="#1D9E75"/>
+<text x="846" y="480" font-size="10" fill="#5F5E5A" font-family="sans-serif">全靠逐个跑测试才发现</text><circle cx="837" cy="494" r="3" fill="#1D9E75"/>
+<text x="846" y="497" font-size="10" fill="#5F5E5A" font-family="sans-serif"></text><circle cx="837" cy="511" r="3" fill="#1D9E75"/>
+<text x="846" y="514" font-size="10" fill="#5F5E5A" font-family="sans-serif">有热度表之后，</text><circle cx="837" cy="528" r="3" fill="#1D9E75"/>
+<text x="846" y="531" font-size="10" fill="#5F5E5A" font-family="sans-serif">改 argue-engine 前</text><circle cx="837" cy="545" r="3" fill="#1D9E75"/>
+<text x="846" y="548" font-size="10" fill="#5F5E5A" font-family="sans-serif">就知道必须跑全套</text><text x="834" y="568" font-size="10" fill="#8B8A85" font-family="sans-serif">经验：改高被依赖模块</text><text x="834" y="585" font-size="10" fill="#8B8A85" font-family="sans-serif">先跑三套测试，比事后补救快。</text>
+<rect x="40" y="686" width="760" height="62" rx="6" fill="#FBFCFE" stroke="#D8DCE3" stroke-width="1"/>
+<circle cx="55" cy="701" r="3.5" fill="#1D9E75"/>
+<text x="65" y="703" font-size="11" fill="#0E7C6B" font-family="sans-serif" font-weight="500">完整的逻辑地图，要回答这 9 个问题：</text><text x="56" y="720" font-size="9" fill="#0E7C6B" font-family="sans-serif">① 什么能力 CAP</text>
+<text x="58" y="731" font-size="8" fill="#8B8A85" font-family="sans-serif">（形式推理组）</text><text x="201.6" y="720" font-size="9" fill="#0E7C6B" font-family="sans-serif">② 前端页面 PAGE</text>
+<text x="203.6" y="731" font-size="8" fill="#8B8A85" font-family="sans-serif">（五个页面入口）</text><text x="347.2" y="720" font-size="9" fill="#0E7C6B" font-family="sans-serif">③ 有哪些按钮 UI</text>
+<text x="349.2" y="731" font-size="8" fill="#8B8A85" font-family="sans-serif">（卡片与选择器）</text><text x="492.79999999999995" y="720" font-size="9" fill="#0E7C6B" font-family="sans-serif">④ 用户做什么 ACT</text>
+<text x="494.79999999999995" y="731" font-size="8" fill="#8B8A85" font-family="sans-serif">（点选与提交）</text><text x="638.4" y="720" font-size="9" fill="#0E7C6B" font-family="sans-serif">⑤ 业务流程 FLOW</text>
+<text x="640.4" y="731" font-size="8" fill="#8B8A85" font-family="sans-serif">（答题到指纹）</text><text x="56" y="741" font-size="9" fill="#0E7C6B" font-family="sans-serif">⑥ 数据存什么 STORE</text>
+<text x="58" y="752" font-size="8" fill="#8B8A85" font-family="sans-serif">（本地日志）</text><text x="201.6" y="741" font-size="9" fill="#0E7C6B" font-family="sans-serif">⑦ 走什么接口 API</text>
+<text x="203.6" y="752" font-size="8" fill="#8B8A85" font-family="sans-serif">（匿名标识与房间）</text><text x="347.2" y="741" font-size="9" fill="#0E7C6B" font-family="sans-serif">⑧ 怎么判定 RULE</text>
+<text x="349.2" y="752" font-size="8" fill="#8B8A85" font-family="sans-serif">（真值表与边界）</text><text x="492.79999999999995" y="741" font-size="9" fill="#0E7C6B" font-family="sans-serif">⑨ 什么测试验证 TEST</text>
+<text x="494.79999999999995" y="752" font-size="8" fill="#8B8A85" font-family="sans-serif">（三套测试门禁）</text>
+<rect x="40" y="756" width="1040" height="30" rx="4" fill="#FBFCFE" opacity="0.92"/>
+<text x="560" y="775" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500" dominant-baseline="central">改一个文件前先问：它被谁依赖？ 依赖它的必须同步检查吗？</text></svg>
