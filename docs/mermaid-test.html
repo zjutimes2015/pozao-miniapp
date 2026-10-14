@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html><head><meta charset='utf-8'>
+<script src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js'></script>
+<style>body{margin:0;background:#C6F1EA;padding:20px}</style>
+</head><body>
+<div id='out'></div>
+<pre id='src' style='display:none'>flowchart TB
+
+    subgraph SG_CAP["<b>产品能力</b>"]
+        CAP001["<b>CAP-001</b><br/>能力<br/><i>用户完成什么</i>"]
+    end
+
+    subgraph SG_PAGE["<b>前端页面</b>"]
+        PAGE001["<b>PAGE-001</b><br/>首页<br/><i>测试 / 入口</i>"]
+        PAGE002["<b>PAGE-002</b><br/>答题页<br/><i>答题 / 判题</i>"]
+        PAGE003["<b>PAGE-003</b><br/>结果页<br/><i>入档结果</i>"]
+    end
+
+    subgraph SG_UI["<b>有源按钮</b>"]
+        UI001["<b>UI-001</b><br/>开始测试<br/><i>触发答题流程</i>"]
+        UI002["<b>UI-002</b><br/>选项卡<br/><i>点击提交</i>"]
+    end
+
+    subgraph SG_ACT["<b>用户动作</b>"]
+        ACT001["<b>ACT-001</b><br/>点击开始测试"]
+        ACT002["<b>ACT-002</b><br/>点击提交"]
+    end
+
+    subgraph SG_FLOW["<b>业务流程</b>"]
+        FLOW001["<b>FLOW-001</b><br/>答题流程<br/><i>30 题 + 特殊题</i>"]
+    end
+
+    subgraph SG_STORE["<b>数据存储</b>"]
+        STORE001["<b>STORE-001</b><br/>题库<br/><i>答题 / session</i>"]
+        STORE002["<b>STORE-002</b><br/>答案记录"]
+        STORE003["<b>STORE-003</b><br/>分数<br/><i>测试结果</i>"]
+    end
+
+    subgraph SG_API["<b>走什么接口</b>"]
+        API001["<b>API-001</b><br/>计算人格结果<br/><i>类型和 TOP5</i>"]
+    end
+
+    subgraph SG_RULE["<b>怎么判定</b>"]
+        RULE001["<b>RULE-001</b><br/>答案必须完整合法"]
+        RULE002["<b>RULE-002</b><br/>A/B 不能相同"]
+    end
+
+    subgraph SG_TEST["<b>什么测试验证</b>"]
+        TEST001["<b>TEST-001</b><br/>人格计算校验"]
+        TEST003["<b>TEST-003</b><br/>结果保存"]
+    end
+
+    CAP001 --> PAGE001
+    PAGE001 --> UI001
+    PAGE002 --> UI002
+    UI001 --> ACT001
+    UI002 --> ACT002
+    ACT001 --> FLOW001
+    ACT002 --> FLOW001
+    FLOW001 --> API001
+    FLOW001 --> STORE002
+    API001 --> STORE003
+    STORE001 --> FLOW001
+    STORE002 --> TEST003
+    STORE003 --> TEST001
+    API001 --> RULE001
+    API001 --> RULE002
+
+    classDef cap fill:#C6F1EA,stroke:#3FC7AE,stroke-width:1.5px,color:#0B3B34
+    classDef page fill:#DFF7F2,stroke:#3FC7AE,stroke-width:1.5px,color:#0B3B34
+    classDef ui fill:#FFF3E0,stroke:#F0A868,stroke-width:1.5px,color:#6B3A12
+    classDef act fill:#F0F4FF,stroke:#7A9AE0,stroke-width:1.5px,color:#1B2E63
+    classDef flow fill:#EAF3FF,stroke:#5B8DD6,stroke-width:1.5px,color:#12325C
+    classDef store fill:#F0FAF4,stroke:#4FB79E,stroke-width:1.5px,color:#0B3B34
+    classDef api fill:#EDE7F6,stroke:#9575CD,stroke-width:1.5px,color:#311B53
+    classDef rule fill:#FFF9E6,stroke:#E8C547,stroke-width:1.5px,color:#5C4800
+    classDef test fill:#FCE4EC,stroke:#D67BA0,stroke-width:1.5px,color:#5C1F38
+
+    class CAP001 cap
+    class PAGE001,PAGE002,PAGE003 page
+    class UI001,UI002 ui
+    class ACT001,ACT002 act
+    class FLOW001 flow
+    class STORE001,STORE002,STORE003 store
+    class API001 api
+    class RULE001,RULE002 rule
+    class TEST001,TEST003 test
+
+    linkStyle default stroke:#4FB79E,stroke-width:1px</pre>
+<script>
+mermaid.initialize({
+  startOnLoad:false,
+  theme:'base',
+  themeVariables:{
+    fontFamily:'"Helvetica Neue", Helvetica, "PingFang SC", sans-serif',
+    primaryColor:'#C6F1EA', primaryTextColor:'#0B3B34', primaryBorderColor:'#3FC7AE',
+    lineColor:'#4FB79E', fontSize:'13px'
+  },
+  flowchart:{nodeSpacing:42, rankSpacing:46, padding:10, useMaxWidth:false}
+});
+const code = document.getElementById('src').textContent;
+mermaid.render('g1', code).then(r=>{
+  document.getElementById('out').innerHTML = r.svg;
+  document.title='READY:'+r.svg.length;
+}).catch(e=>{
+  document.getElementById('out').innerHTML = '<pre style='+String.fromCharCode(34)+'color:red;font-size:11px'+String.fromCharCode(34)+'>ERR: '+e+'</pre>';
+  document.title='ERROR';
+});
+</script></body></html>
