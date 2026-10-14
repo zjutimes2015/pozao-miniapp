@@ -418,6 +418,213 @@ const argFb = argFw.buildARGTrainingFeedback(
 );
 ok('ARG 反馈不含积分诱导', !/积分|得分奖励|奖励/.test(argFb.text), argFb.text);
 
+console.log('\n═══ 5f. 首测结果可展示性（真实上线阻断级） ═══\n');
+
+// ── 背景 ──
+// 首测 15 题覆盖 12 个谬误，单维最多 2 次。
+// 曾把副榜门槛设为 3，导致首测后 fall / catch 恒为空，
+// 但 sampleSufficient 却报 true —— 用户答完 15 题却看到空白指纹页。
+//
+// 这类bug 靠「读代码」发现不了，必须用真实题量跑边界画像来暴露。
+
+function buildLogs(pickCorrect) {
+  const out = [];
+  for (const lv of bank.levels) {
+    for (const q of lv.questions) {
+      out.push({
+        levelId: lv.id,
+        fallacyKey: q.fallacyKey,
+        correct: pickCorrect(engine.FALLACIES[q.fallacyKey].group),
+        fellInto: !pickCorrect(engine.FALLACIES[q.fallacyKey].group),
+        mode: 'solo',
+        ts: Date.now(),
+      });
+    }
+  }
+  return out;
+}
+
+// 1) 全对：没有破绽是合法结果，但绝不能被描述成「X（0%）是最常见的破绽」
+const perfectFp = engine.computeFingerprint(buildLogs(() => true));
+ok('全对时副榜「易犯」为空（正确）', perfectFp.fall.length === 0,
+  `实际 ${perfectFp.fall.length} 项`);
+const perfectPattern = engine.describePattern(perfectFp);
+ok('全对时不硬编破绽', !/\d+%）是你最常见的破绽/.test(perfectPattern),
+  perfectPattern);
+ok('全对时给出「守住而非突破」类结论',
+  /守住|没有明显失守/.test(perfectPattern), perfectPattern);
+
+// 2) 全错：两个榜单都必须有内容
+const worstFp = engine.computeFingerprint(buildLogs(() => false));
+ok('全错时易犯榜有内容', worstFp.fall.length > 0, `${worstFp.fall.length} 项`);
+ok('全错时会抓榜有内容', worstFp.catch.length > 0, `${worstFp.catch.length} 项`);
+
+// 3) sampleSufficient 必须只取决于「组数 + 题数」
+//
+//    曾经的错误：把「fall/catch 榜单是否为空」也算进样本充足判定。
+//    但「易犯榜为空」是**合法状态**（用户各维度都没失守），
+//    把它当样本不足会让 63% 的中等用户看到「样本不足」——
+//    而他们其实答对了大部分题。
+//
+//    正确口径：只要答满足够题数并覆盖 ≥2 组，就算样本充足。
+const fullLogs = buildLogs(() => true);
+const fullFp = engine.computeFingerprint(fullLogs);
+ok('答满题数即算样本充足（哪怕没有破绽）',
+  fullFp.sampleSufficient === true,
+  `答 ${fullLogs.length} 题却报样本不足`);
+
+// 各画像都必须 100% 出结果（1000 次采样，超过阈值即失败）
+const PROFILES = [
+  ['天才', { '形式': 0.85, '论证': 0.75, '语义': 0.70 }],
+  ['中等', { '形式': 0.85, '论证': 0.50, '语义': 0.30 }],
+  ['新手', { '形式': 0.40, '论证': 0.35, '语义': 0.30 }],
+];
+for (const [name, probs] of PROFILES) {
+  let hit = 0;
+  const N = 400;
+  for (let i = 0; i < N; i++) {
+    const logs = buildLogs(g => Math.random() < probs[g]);
+    if (engine.computeFingerprint(logs).sampleSufficient) hit++;
+  }
+  ok(`${name}画像首测必出结果（100%）`, hit === N, `${hit}/${N}`);
+}
+
+// 4) 单维门槛必须 ≤ 2（首测单维最多 2 次，门槛设 3 会让副榜恒空）
+ok('单维门槛 ≤ 2（首测题量约束）',
+  engine.computeFingerprint(buildLogs(() => true), { minSamples: 3 }).fall.length === 0,
+  '门槛 3 时应为空 —— 这正是原 bug 的成因，用作对照');
+ok('单维门槛 = 2 时全对场景副榜有内容',
+  engine.computeFingerprint(buildLogs(() => true), { minSamples: 2 }).catch.length > 0);
+
+// 5) 三组差异是否稳定可辨
+//
+//    注意断言口径：**用平均水平，不用最差水平**。
+//    首测只有 15 题，组内易犯率本身有±20pp 的抽样波动，
+//    拿「30 次中最差的一次」当标准会得到不稳定的假失败。
+//    这里要验证的是「差异方向稳定存在」，不是「每次都拉开多少」。
+let spreadSum = 0, above20 = 0;
+const SPREAD_N = 40;
+for (let i = 0; i < SPREAD_N; i++) {
+  const probs = { '形式': 0.85, '论证': 0.5, '语义': 0.3 };
+  const fp = engine.computeFingerprint(buildLogs(g => Math.random() < probs[g]));
+  const rates = fp.groups.map(g => g.fallRate);
+  const spread = Math.max(...rates) - Math.min(...rates);
+  spreadSum += spread;
+  if (spread >= 20) above20++;
+}
+const avgSpread = spreadSum / SPREAD_N;
+ok('三组差异稳定可辨（平均≥ 20pp）', avgSpread >= 20,
+  `平均差${avgSpread.toFixed(1)}pp`);
+ok('差异方向明确（多数情况拉开 20pp 以上）', above20 >= SPREAD_N * 0.6,
+  `${above20}/${SPREAD_N} 次达到 20pp`);
+
+// 6) 所有画像的模式描述都必须过合规
+const PATTERNS = [
+  ['全对', perfectPattern],
+  ['全错', engine.describePattern(worstFp)],
+  ['单题', engine.describePattern(engine.computeFingerprint([
+    { levelId: 1, fallacyKey: 'affirming_consequent', correct: false, fellInto: true, ts: Date.now() },
+  ]))],
+];
+for (const [name, text] of PATTERNS) {
+  ok(`模式描述合规（${name}）`, compliance.checkText(text).safe, text);
+  ok(`模式描述非空（${name}）`, text.length > 10, `长度 ${text.length}`);
+}
+
+console.log('\n═══ 5g. 反馈多样性（留存关键） ═══\n');
+
+// 背景：曾出现过全部 77 道题的答对反馈是同一句话。
+// 功能上"能用"，但用户答对 20 题看到 20 次同一句，会觉得系统在敷衍 ——
+// 这是留存问题，不是 bug，靠读代码发现不了。
+
+const ALL_POOLS = [
+  bank.levels.flatMap(l => l.questions),
+  require('../data/versus-bank.js').questions,
+  require('../data/rotation-bank.js').questions,
+  require('../data/extended-bank.js').questions,
+];
+const ALL_Q = ALL_POOLS.flat();
+
+function answerVariants(q) {
+  const to = q.breakpoint.to;
+  return {
+    correct: { breakpointFrom: q.breakpoint.from, breakpointTo: to, fallacyKey: q.fallacyKey },
+    fallacy: { breakpointFrom: q.breakpoint.from, breakpointTo: to, fallacyKey: '__wrong__' },
+    linkage: { breakpointFrom: q.breakpoint.from, breakpointTo: '__wrong__', fallacyKey: q.fallacyKey },
+    position: { breakpointFrom: '__wrong__', breakpointTo: to, fallacyKey: q.fallacyKey },
+  };
+}
+
+// 1) 答对文案必须有多种（≥ 4 种）
+const praiseSet = new Set();
+for (const q of ALL_Q) {
+  const fb = engine.buildFeedback(q,
+    engine.evaluate(q, answerVariants(q).correct), { missCount: 0 });
+  praiseSet.add(fb.text);
+}
+ok('答对反馈文案 ≥ 4 种（不是同一句）', praiseSet.size >= 4,
+  `实际仅 ${praiseSet.size} 种`);
+
+// 2) 同一题重复反馈必须一致（确定性 —— 随机反馈会被当成敷衍）
+const q0 = ALL_Q[0];
+const t1 = engine.buildFeedback(q0, engine.evaluate(q0, answerVariants(q0).correct), { missCount: 0 }).text;
+const t2 = engine.buildFeedback(q0, engine.evaluate(q0, answerVariants(q0).correct), { missCount: 0 }).text;
+ok('同一题反馈可复现（确定性）', t1 === t2);
+
+// 3) 答错的细分类型必须区分开（否则"位置对类型错"和"位置错"给同一句话）
+const KINDS = ['fallacy', 'linkage', 'position'];
+const kindTexts = new Set();
+for (const k of KINDS) {
+  const fb = engine.buildFeedback(q0, engine.evaluate(q0, answerVariants(q0)[k]), { missCount: 0 });
+  kindTexts.add(fb.text);
+}
+ok('三类答错给三种不同引导', kindTexts.size === 3, `实际 ${kindTexts.size} 种`);
+
+// 4) evaluate 的 reason 判定必须严格（曾经的bug：起点错但终点对 → 被误判 linkage）
+ok('起点错 → reason=position', engine.evaluate(q0, answerVariants(q0).position).reason === 'position');
+ok('终点错 → reason=linkage', engine.evaluate(q0, answerVariants(q0).linkage).reason === 'linkage');
+ok('类型错 → reason=fallacy', engine.evaluate(q0, answerVariants(q0).fallacy).reason === 'fallacy');
+
+// 5) 全部题 × 全部结果的反馈都要过合规，且无乱码
+let bad = 0, mojibake = 0;
+for (const q of ALL_Q) {
+  for (const [k, ans] of Object.entries(answerVariants(q))) {
+    const fb = engine.buildFeedback(q, engine.evaluate(q, ans), { missCount: 0 });
+    if (!compliance.checkText(fb.text + (fb.hint || '')).safe) bad++;
+    if (/�/.test(fb.text + (fb.hint || ''))) mojibake++;
+  }
+}
+ok('全部反馈过合规扫描', bad === 0, `${bad} 条命中禁用词`);
+ok('全部反馈无乱码字符', mojibake === 0, `${mojibake} 处`);
+
+console.log(`\n  反馈样本：${ALL_Q.length} 题 × 4 种结果 = ${ALL_Q.length * 4} 条`);
+console.log(`  答对文案种类：${praiseSet.size}`);
+
+// 分享入口完整性：曾出现过「全项目只有 2 处 onShareAppMessage」，
+// 对攻页（双人玩法，天然的邀请场景）与训练页都没有，裂变闭环是断的。
+const SHARE_PAGES = ['solo', 'fingerprint', 'versus', 'train'];
+for (const pg of SHARE_PAGES) {
+  const js = fs.readFileSync(path.join(__dirname, '..', 'pages', pg, `${pg}.js`), 'utf8');
+  const wxml = fs.readFileSync(path.join(__dirname, '..', 'pages', pg, `${pg}.wxml`), 'utf8');
+  ok(`${pg} 页有 onShareAppMessage`, js.includes('onShareAppMessage'));
+  ok(`${pg} 页有原生 open-type="share" 按钮`, wxml.includes('open-type="share"'),
+    '微信只认原生 button open-type，bindtap="onShareAppMessage" 是无效写法');
+}
+// 分享文案不得承诺奖励（3.2.1）
+const shareTitles = [];
+for (const pg of SHARE_PAGES) {
+  const js = fs.readFileSync(path.join(__dirname, '..', 'pages', pg, `${pg}.js`), 'utf8');
+  const m = js.match(/onShareAppMessage\(\)\s*\{[\s\S]*?title:\s*(?:'([^']*)'|`([^`]*)`)/);
+  if (m) shareTitles.push({ pg, title: m[1] || m[2] || '' });
+}
+ok('分享文案不含奖励承诺',
+  shareTitles.every(s => !/解锁|奖励|得[\s0-9]+题|额外|送/.test(s.title)),
+  shareTitles.filter(s => /解锁|奖励|得[\s0-9]+题|额外|送/.test(s.title))
+    .map(s => `${s.pg}:${s.title}`).join(' | '));
+ok('分享文案均过合规扫描',
+  shareTitles.every(s => compliance.checkText(s.title).safe),
+  shareTitles.filter(s => !compliance.checkText(s.title).safe).map(s => s.pg).join(','));
+
 console.log('\n═══ 5e. 15 维模型完整性 ═══\n');
 
 ok('共 15 类谬误', engine.FALLACY_LIST.length === 15,

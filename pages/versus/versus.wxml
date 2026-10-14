@@ -105,4 +105,12 @@
 
     <button class="btn-secondary" bindtap="onAgain">再来一局</button>
   </view>
+
+  <!-- 合规分享入口：双人同题是天然的邀请场景。
+       不设奖励、不解锁内容（3.2.1） -->
+  <view class="share-block" wx:if="{{status !== 'finished'}}">
+    <button class="share-btn" open-type="share">
+      <text class="share-btn-text">邀请朋友拆同一道 ›</text>
+    </button>
+  </view>
 </view>

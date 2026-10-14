@@ -523,3 +523,27 @@
   width: 100%;
   margin-top: 8rpx;
 }
+/* 合规分享入口：原生 open-type="share" 按钮，不设奖励、不解锁内容 */
+.share-btn {
+  display: block;
+  width: 100%;
+  margin-top: 32rpx;
+  padding: 24rpx 0;
+  background: transparent;
+  border: 1rpx solid #D3D1C7;
+  border-radius: 12rpx;
+  line-height: 1;
+}
+
+.share-btn::after {
+  border: none;
+}
+
+.share-btn-text {
+  font-size: 26rpx;
+  color: #5F5E5A;
+}
+
+.share-block {
+  margin-top: 8rpx;
+}

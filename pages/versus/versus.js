@@ -239,6 +239,20 @@ Page({
     });
   },
 
+  /**
+   * 合规分享入口（3.2.1）
+   * 双人同题天然是邀请场景，但分享不得带来任何功能增益 —— 不设奖励、不解锁内容。
+   */
+  onShareAppMessage() {
+    const room = this.data.roomId;
+    return {
+      title: room
+        ? '这道题我们一起拆，看谁先找到断点'
+        : '来拆一道题，看谁先找到那句话说不通的地方',
+      path: room ? `/pages/versus/versus?code=${room}` : '/pages/versus/versus',
+    };
+  },
+
   onAgain() {
     this.pickedId = null;
     this.setData({

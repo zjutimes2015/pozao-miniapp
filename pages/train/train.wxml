@@ -224,5 +224,10 @@
 
       <button class="btn-secondary" bindtap="onSwitchTroll">换一段</button>
     </view>
+
+    <!-- 合规分享入口：不设奖励、不解锁内容（3.2.1） -->
+    <button class="share-btn" open-type="share">
+      <text class="share-btn-text">把这道发给朋友 ›</text>
+    </button>
   </view>
 </view>

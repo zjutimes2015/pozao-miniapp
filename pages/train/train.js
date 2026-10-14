@@ -448,6 +448,17 @@ Page({
     });
   },
 
+  /** 合规分享入口（3.2.1）：分享当日训练题，不设奖励 */
+  onShareAppMessage() {
+    const q = this.data.currentQuestion;
+    return {
+      title: q
+        ? '今天这道题，你停在哪一步？'
+        : '拆一道题，找那句话里说不通的地方',
+      path: '/pages/train/train',
+    };
+  },
+
   onNext() {
     const next = this.data.currentIndex + 1;
     if (next < this.dailySet.length) {

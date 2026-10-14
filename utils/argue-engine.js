@@ -242,19 +242,35 @@ function evaluate(question, answer) {
     return { correct: false, reason: 'invalid_question' };
   }
   const bp = question.breakpoint;
+  const from = answer.breakpointFrom;
+  const to = answer.breakpointTo;
+  const fk = answer.fallacyKey;
 
-  const correct =
-    answer.breakpointFrom === bp.from &&
-    answer.breakpointTo === bp.to &&
-    answer.fallacyKey === bp.fallacy;
+  const correct = from === bp.from && to === bp.to && fk === bp.fallacy;
+
+  // 答错原因分三类，用于给不同引导：
+  //   fallacy  —— 起终点都对，只有谬误类型判错（最难，需肯定位置）
+  //   linkage  —— 起点对，终点选了别的卡片（推理方向没连对）
+  //   position —— 连起点都没找对
+  //
+  // 判定必须**严格按优先级**：先看类型，再看终点，最后才是起点。
+  // 早先用`from === bp.from || to === bp.to` 合并判断，
+  // 导致「起点也没找对但恰好终点对」被误判成 linkage。
+  let reason = null;
+  if (!correct) {
+    if (from === bp.from && to === bp.to) reason = 'fallacy';
+    else if (from === bp.from) reason = 'linkage';
+    else reason = 'position';
+  }
 
   return {
     correct,
+    reason,
     expected: bp,
     actual: {
-      breakpointFrom: answer.breakpointFrom,
-      breakpointTo: answer.breakpointTo,
-      fallacyKey: answer.fallacyKey,
+      breakpointFrom: from,
+      breakpointTo: to,
+      fallacyKey: fk,
     },
   };
 }
@@ -264,20 +280,78 @@ function evaluate(question, answer) {
  * 依据：Deci, Koestner & Ryan (1999, 128 项实验)
  * d = +0.33 —— 这是唯一能增强内在动机的外在刺激
  * 禁止使用「答对即得 N 积分」式确定性物质奖励
+ *
+ * 反馈必须**因题而异**，不能全用同一句。
+ * 实现方式：用题目 id 作确定性种子取变体，
+ * 保证同一题每次反馈一致（可复现），不同题反馈不同（有变化）。
+ * 「确定性」很重要 —— 随机反馈会让用户觉得系统在敷衍。
  */
+const PRAISE_FIRST = [
+  '你停在了推理真正断掉的那一步。不是每个前提都通向结论，你认出了哪一步不通。',
+  '你找到的是问题的根，不是症状。往后每一步都建立在这句上，所以这里塌了，整句就不成立。',
+  '位置选对了。这类话最容易骗过人，因为它的每句话单独看都没问题——问题在拼接处。',
+  '你没有被前面的叙述带走。理由听起来通顺不代表推得下去，你认出了那个接缝。',
+  '这一步确实是分水岭。前面几句都可以接受，从这里开始就断了。',
+];
+const PRAISE_AFTER_MISS = [
+  '这次你先把断点摸清了。上一轮绕过去的地方，这次没有绕。',
+  '你从别处下手，但走到了正确的位置。这个顺序不丢人。',
+  '这次你没有急着给结论，先把理由摊开看了——这正是抓到它的前提。',
+  '找到了。上一次漏掉的那一步，这次你看见了。',
+  '这次的位置是准的。顺着它往下推，会看到理由在哪断掉。',
+];
+
+/** 用题目 id 生成稳定的下标 */
+function seedOf(str) {
+  let h = 0;
+  const s = String(str || '');
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
 function buildFeedback(question, result, history) {
+  const seed = seedOf(question && question.id);
+
   if (result.correct) {
-    const misses = history.missCount || 0;
-    if (misses === 0) {
-      return { text: '一次就抓到了隐藏前提。这题的断点不在显眼处，位置很准。', tone: 'praise' };
-    }
-    return { text: '你抓到了隐藏前提。这题很多人会漏看，你没有。', tone: 'praise' };
+    const misses = (history && history.missCount) || 0;
+    const pool = misses === 0 ? PRAISE_FIRST : PRAISE_AFTER_MISS;
+    return {
+      text: pool[seed % pool.length],
+      tone: 'praise',
+    };
   }
 
   const bp = question.breakpoint;
   const fp = FALLACIES[bp.fallacy];
+
+  // 答错也分两类，给不同的引导
+  const wrongType = result.reason || (
+    result.actual && result.actual.breakpointFrom !== bp.from ? 'position' : 'fallacy'
+  );
+
+  const at = question.cards.find(c => c.id === bp.from);
+  const atText = at ? at.text : bp.from;
+
+  if (wrongType === 'fallacy') {
+    return {
+      text: `位置对了，但类型判错。你停在了「${atText}」这一步——只是这一步的问题不叫${fp ? fp.name : '那个名字'}。`,
+      tone: 'redirect',
+      hint: fp ? `${fp.name}：${fp.why}` : '',
+    };
+  }
+
+  if (wrongType === 'linkage') {
+    return {
+      text: `起点对了，但方向反了。推理是「${atText}」这一段往下走之后才断的——注意是往下，不是往上。`,
+      tone: 'redirect',
+      hint: fp ? `${fp.name}：${fp.why}` : '',
+    };
+  }
+
   return {
-    text: `断点找错位置了。这句话的问题在「${question.cards.find(c => c.id === bp.from)?.text || bp.from}」这一步——往下推的时候，理由断了。`,
+    text: `你停的位置偏了。这句话真正断掉的地方在「${atText}」——前面几句都能接得住，从这儿开始理由就不通了。`,
     tone: 'redirect',
     hint: fp ? `${fp.name}：${fp.why}` : '',
   };
@@ -310,7 +384,15 @@ function bayesScore(correct, total, alpha = 1) {
  */
 function computeFingerprint(logs, options) {
   const opts = Object.assign({
-    minSamples: 3,      // 单维进入副榜的最低样本
+    // 单维进入副榜的最低样本。
+    //
+    // 关键：首测 15 题覆盖 12 个谬误，单维最多 2 次。
+    // 若门槛 ≥ 3，首测后副榜恒为空 —— 而主榜照常出结果，
+    // 会出现「sampleSufficient=true 但两个榜单都是空」的自相矛盾状态。
+    //
+    // 因此门槛定为 2：只要某维度被考到 2 次就进副榜，
+    // 样本更少（1 次）的不进，避免单次判断被当成结论。
+    minSamples: 2,
     minLevels: 3,       // 完成完整指纹的最低关卡数
     highSamples: 8,     // 高置信门槛
   }, options || {});
@@ -427,6 +509,12 @@ function computeFingerprint(logs, options) {
     fall: fallList.slice(0, 3),
     catch: catchList.slice(0, 3),
     situational: situational.slice(0, 3),
+    // 样本是否足够：只看「组数 ≥ 2 且总题数 ≥ 10」。
+    //
+    // **不要**把 fallList / catchList 是否为空算进来 ——
+    // 「易犯榜为空」是合法状态（用户各维度都没失守），不是样本不足。
+    // 曾尝试加上这条判定，导致 63% 的中等用户被判为「样本不足」，
+    // 而他们其实答对了大部分题。这是把「结果为空」误当成「数据不足」。
     sampleSufficient: groupList.length >= 2 && totalCount >= 10,
     totalLogs: logs.length,
   };
@@ -483,12 +571,32 @@ function describePattern(fingerprint) {
     return `你的「会抓」明显强于「不犯」。${strongest.name}你看得清楚，但${weakest.name}是自己的盲区。看得出来的漏洞，讲出来的时候容易漏。`;
   }
   if (weakest.fallRate >= 60) {
-    return `${weakest.name}是你最常见的破绽（${fallRate}%）。这一组的毛病通常不在能力，而在习惯——被带着走的时候没停下来检查前提。`;
+    return `${weakest.name}是你最常见的破绽（${weakest.fallRate}%）。这一组的毛病通常不在能力，而在习惯——被带着走的时候没停下来检查前提。`;
   }
-  if (fallName && catchName && fallRate > 0 && catchRate >= 80) {
-    return `整体已经比较稳。${fallName}（${fallRate}%）是唯一明显掉队的，把它补上就够了。`;
+
+  // 三组都没有明显失守（易犯率均 < 60%）
+  //
+  // 这一档最容易写出误导性结论：若沿用 fallName / fallRate 兜底，
+  // 全对用户会得到「X（0%）是你最常见的破绽」——
+  // 给一个不存在的问题。**没有破绽时不要硬编一个。**
+  if (weakest.fallRate === 0) {
+    if (strongest.catchRate >= 85) {
+      return `三组都没有明显失守。${strongest.name}上你尤其稳。这类测评对你更多是「守住」，不是「突破」。`;
+    }
+    return `三组都没有明显失守，但也没有特别突出的强项。可以挑一组深入练，看能不能把稳定变成优势。`;
   }
-  return `${fallName}（${fallRate}%）是你最常见的破绽，${catchName}（${catchRate}%）是你最稳的强项。这个落差本身就是最值得练的地方。`;
+
+  // 有轻度失守：必须用组聚合数据，不能用空的副榜兜底
+  if (fall.length && catchList.length && fall[0].rate > 0 && catchList[0].rate >= 80) {
+    return `整体已经比较稳。${fall[0].name}（${fall[0].rate}%）是唯一明显掉队的，把它补上就够了。`;
+  }
+
+  if (fall.length && catchList.length) {
+    return `${fall[0].name}（${fall[0].rate}%）是你最常见的破绽，${catchList[0].name}（${catchList[0].rate}%）是你最稳的强项。这个落差本身就是最值得练的地方。`;
+  }
+
+  // 副榜样本不足：只用组聚合下结论，不引用具体维度
+  return `${weakest.name}是你相对最弱的一组（易犯 ${weakest.fallRate}%），${strongest.name}最强（会抓 ${strongest.catchRate}%）。多练几关能看出具体是哪个维度在拖后腿。`;
 }
 
 module.exports = {
