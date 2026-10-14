@@ -53,6 +53,9 @@ const C = {
   groupFill: '#EAFBF7',
 };
 
+const FONT_SANS = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif`;
+const FONT_MONO = `'SF Mono', 'Cascadia Mono', Consolas, 'Liberation Mono', 'Courier New', monospace`;
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /** 箭头 marker */
@@ -73,7 +76,7 @@ function group(x, y, w, h, label) {
   return `
 <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${C.groupFill}" stroke="${C.groupStroke}" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
 <rect x="${x + 10}" y="${y - 11}" width="${label.length * 11 + 16}" height="18" rx="9" fill="${C.bg}" stroke="${C.groupStroke}" stroke-width="0.8"/>
-<text x="${x + 10 + (label.length * 11 + 16) / 2}" y="${y - 2}" font-size="11" fill="${C.title}" text-anchor="middle" font-family="sans-serif" font-weight="500">${esc(label)}</text>`;
+<text x="${x + 10 + (label.length * 11 + 16) / 2}" y="${y - 2}" font-size="11" fill="${C.title}" text-anchor="middle" font-family="${FONT_SANS}" font-weight="500">${esc(label)}</text>`;
 }
 
 /** 三层节点卡：ID / 名称 / 位置 */
@@ -83,9 +86,9 @@ function node(x, y, w, id, name, desc, opts = {}) {
   const stroke = opts.stroke || C.nodeStroke;
   return `
 <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>
-<text x="${x + w / 2}" y="${y + 14}" font-size="10" fill="${C.nodeId}" text-anchor="middle" font-family="monospace">${esc(id)}</text>
-<text x="${x + w / 2}" y="${y + 31}" font-size="13" fill="${C.nodeName}" text-anchor="middle" font-family="sans-serif" font-weight="500">${esc(name)}</text>
-${desc ? `<text x="${x + w / 2}" y="${y + 44}" font-size="9" fill="${C.nodeDesc}" text-anchor="middle" font-family="sans-serif">${esc(desc)}</text>` : ''}`;
+<text x="${x + w / 2}" y="${y + 14}" font-size="10" fill="${C.nodeId}" text-anchor="middle" font-family="${FONT_MONO}">${esc(id)}</text>
+<text x="${x + w / 2}" y="${y + 31}" font-size="13" fill="${C.nodeName}" text-anchor="middle" font-family="${FONT_SANS}" font-weight="500">${esc(name)}</text>
+${desc ? `<text x="${x + w / 2}" y="${y + 44}" font-size="10" fill="${C.nodeDesc}" text-anchor="middle" font-family="${FONT_SANS}">${esc(desc)}</text>` : ''}`;
 }
 
 /** 橙色 pill 标签 */
@@ -93,7 +96,7 @@ function pill(x, y, text, w) {
   const width = w || text.length * 10 + 18;
   return `
 <rect x="${x}" y="${y}" width="${width}" height="17" rx="8.5" fill="${C.pill}" stroke="${C.pillStroke}" stroke-width="0.9"/>
-<text x="${x + width / 2}" y="${y + 12}" font-size="10" fill="${C.pillText}" text-anchor="middle" font-family="sans-serif">${esc(text)}</text>`;
+<text x="${x + width / 2}" y="${y + 12}" font-size="10" fill="${C.pillText}" text-anchor="middle" font-family="${FONT_SANS}">${esc(text)}</text>`;
 }
 
 /** 实线箭头 */
@@ -126,13 +129,13 @@ function detailPanel(x, y, w, h, title, badge, rows) {
   let b = `
 <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${C.panel}" stroke="${C.panelBorder}" stroke-width="1"/>
 <line x1="${x}" y1="${y + 30}" x2="${x + w}" y2="${y + 30}" stroke="${C.panelBorder}" stroke-width="1"/>
-<text x="${x + 14}" y="${y + 19}" font-size="12" fill="${C.title}" font-family="sans-serif" font-weight="500">${esc(title)}</text>
+<text x="${x + 14}" y="${y + 19}" font-size="12" fill="${C.title}" font-family="${FONT_SANS}" font-weight="500">${esc(title)}</text>
 <rect x="${x + w - 62}" y="${y + 8}" width="50" height="15" rx="7.5" fill="#F5A623"/>
-<text x="${x + w - 37}" y="${y + 19}" font-size="9" fill="#FFFFFF" text-anchor="middle" font-family="sans-serif">${esc(badge)}</text>`;
+<text x="${x + w - 37}" y="${y + 19}" font-size="10" fill="#FFFFFF" text-anchor="middle" font-family="${FONT_SANS}">${esc(badge)}</text>`;
   rows.forEach((r, i) => {
     const ry = y + 48 + i * 20;
     const isKey = r.startsWith('不可降级') || r.startsWith('验证路径');
-    b += `<text x="${x + 14}" y="${ry}" font-size="10" fill="${isKey ? C.nodeId : C.gray}" font-family="sans-serif">${esc(r)}</text>`;
+    b += `<text x="${x + 14}" y="${ry}" font-size="10.5" fill="${isKey ? C.nodeId : C.gray}" font-family="${FONT_SANS}">${esc(r)}</text>`;
   });
   return b;
 }
@@ -141,13 +144,13 @@ function detailPanel(x, y, w, h, title, badge, rows) {
 function noteCard(x, y, w, h, title, lines, footLines) {
   let b = `
 <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${C.panel}" stroke="${C.panelBorder}" stroke-width="1"/>
-<text x="${x + 14}" y="${y + 20}" font-size="12" fill="${C.title}" font-family="sans-serif" font-weight="500">${esc(title)}</text>`;
+<text x="${x + 14}" y="${y + 20}" font-size="12" fill="${C.title}" font-family="${FONT_SANS}" font-weight="500">${esc(title)}</text>`;
   lines.forEach((l, i) => {
     b += `<circle cx="${x + 17}" cy="${y + 40 + i * 17}" r="3" fill="#1D9E75"/>
-<text x="${x + 26}" y="${y + 43 + i * 17}" font-size="10" fill="${C.gray}" font-family="sans-serif">${esc(l)}</text>`;
+<text x="${x + 26}" y="${y + 43 + i * 17}" font-size="10" fill="${C.gray}" font-family="${FONT_SANS}">${esc(l)}</text>`;
   });
   footLines.forEach((l, i) => {
-    b += `<text x="${x + 14}" y="${y + 40 + lines.length * 17 + 6 + i * 17}" font-size="10" fill="${C.grayLight}" font-family="sans-serif">${esc(l)}</text>`;
+    b += `<text x="${x + 14}" y="${y + 40 + lines.length * 17 + 6 + i * 17}" font-size="10" fill="${C.grayLight}" font-family="${FONT_SANS}">${esc(l)}</text>`;
   });
   return b;
 }
@@ -168,15 +171,15 @@ function legend(x, y, w, h) {
   let b = `
 <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${C.panel}" stroke="${C.panelBorder}" stroke-width="1"/>
 <circle cx="${x + 15}" cy="${y + 15}" r="3.5" fill="#1D9E75"/>
-<text x="${x + 25}" y="${y + 17}" font-size="11" fill="${C.title}" font-family="sans-serif" font-weight="500">完整的逻辑地图，要回答这 9 个问题：</text>`;
+<text x="${x + 25}" y="${y + 17}" font-size="11" fill="${C.title}" font-family="${FONT_SANS}" font-weight="500">完整的逻辑地图，要回答这 9 个问题：</text>`;
   // 主名与小字同行 —— 两行网格（5 + 4），每格高度仅 22
   items.forEach((it, i) => {
     const col = i % 5;
     const row = Math.floor(i / 5);
     const ix = x + 16 + col * ((w - 32) / 5);
-    const iy = y + 34 + row * 21;
-    b += `<text x="${ix}" y="${iy}" font-size="9" fill="${C.title}" font-family="sans-serif">${esc(it[0])}</text>
-<text x="${ix + 2}" y="${iy + 11}" font-size="8" fill="${C.grayLight}" font-family="sans-serif">（${esc(it[1])}）</text>`;
+    const iy = y + 38 + row * 24;
+    b += `<text x="${ix}" y="${iy}" font-size="10" fill="${C.title}" font-family="${FONT_SANS}">${esc(it[0])}</text>
+<text x="${ix + 2}" y="${iy + 11}" font-size="9.5" fill="${C.grayLight}" font-family="${FONT_SANS}">（${esc(it[1])}）</text>`;
   });
   return b;
 }
@@ -192,15 +195,15 @@ function nodeRow(x, y, w, h, id, name, desc, note, opts = {}) {
   if (!opts.no) {
     b += `
 <circle cx="${x + 16}" cy="${cy}" r="10" fill="${stroke}" opacity="0.15"/>
-<text x="${x + 16}" y="${cy + 4}" font-size="11" fill="${stroke}" text-anchor="middle" font-family="monospace" font-weight="500">${esc(opts.step != null ? String(opts.step) : '')}</text>`;
+<text x="${x + 16}" y="${cy + 4}" font-size="11" fill="${stroke}" text-anchor="middle" font-family="${FONT_MONO}" font-weight="500">${esc(opts.step != null ? String(opts.step) : '')}</text>`;
   }
   b += `
-<text x="${tx}" y="${y + 18}" font-size="10" fill="${C.nodeId}" font-family="monospace">${esc(id)}</text>
-<text x="${tx}" y="${y + 33}" font-size="12.5" fill="${C.nodeName}" font-family="sans-serif" font-weight="500">${esc(name)}</text>
-${desc ? `<text x="${tx}" y="${y + 46}" font-size="8.5" fill="${C.nodeDesc}" font-family="sans-serif">${esc(desc)}</text>` : ''}`;
+<text x="${tx}" y="${y + 18}" font-size="10" fill="${C.nodeId}" font-family="${FONT_MONO}">${esc(id)}</text>
+<text x="${tx}" y="${y + 33}" font-size="12.5" fill="${C.nodeName}" font-family="${FONT_SANS}" font-weight="500">${esc(name)}</text>
+${desc ? `<text x="${tx}" y="${y + 46}" font-size="10" fill="${C.nodeDesc}" font-family="${FONT_SANS}">${esc(desc)}</text>` : ''}`;
   if (note) {
     b += `
-<text x="${x + w - 14}" y="${cy + 4}" font-size="9.5" fill="${C.grayLight}" text-anchor="end" font-family="monospace">${esc(note)}</text>`;
+<text x="${x + w - 14}" y="${cy + 4}" font-size="9.5" fill="${C.grayLight}" text-anchor="end" font-family="${FONT_MONO}">${esc(note)}</text>`;
   }
   return b;
 }
@@ -215,25 +218,25 @@ function numberedArrow(x1, y1, x2, y2) {
 function heatBar(x, y, w, name, deps, risk, color) {
   const maxD = 6;
   const trackX = x + 186;
-  const trackW = w - 300;
+  const trackW = w - 310;
   const bw = trackW * deps / maxD;
   const riskColor = { '高': '#A32D2D', '中': '#854F0B', '低': '#0F6E56' };
   return `
-<text x="${x}" y="${y + 10}" font-size="10" fill="#1C1C1A" font-family="monospace">${esc(name)}</text>
+<text x="${x}" y="${y + 10}" font-size="10" fill="#1C1C1A" font-family="${FONT_MONO}">${esc(name)}</text>
 <rect x="${trackX}" y="${y}" width="${trackW}" height="14" rx="7" fill="${C.groupFill}" opacity="0.5"/>
 <rect x="${trackX}" y="${y}" width="${Math.max(bw, 14)}" height="14" rx="7" fill="${color}"/>
-<text x="${x + w - 46}" y="${y + 11}" font-size="10" fill="${C.gray}" font-family="monospace" text-anchor="end">${deps} 次</text>
-<text x="${x + w}" y="${y + 11}" font-size="10" fill="${riskColor[risk]}" font-family="monospace" text-anchor="end">${risk}</text>`;
+<text x="${x + w - 62}" y="${y + 11}" font-size="10" fill="${C.gray}" font-family="${FONT_MONO}" text-anchor="middle">${deps} 次</text>
+<text x="${x + w - 24}" y="${y + 11}" font-size="10" fill="${riskColor[risk]}" font-family="${FONT_MONO}" text-anchor="middle">${risk}</text>`;
 }
 
 /** 页壳：标题 + 顶部说明条 + 主图区底色（四张图统一） */
 function shell(W, H, pageNo, title, subtitle, note) {
   return `<rect width="${W}" height="${H}" fill="${C.bg}"/>
-<text x="40" y="34" font-size="20" fill="#0B3B34" font-family="sans-serif" font-weight="500">${esc(title)}</text>
-<text x="40" y="54" font-size="11" fill="#0B3B34" opacity="0.75" font-family="sans-serif">${esc(subtitle)}</text>
-<text x="${W - 40}" y="34" font-size="11" fill="#0B3B34" opacity="0.6" text-anchor="end" font-family="monospace">${esc(pageNo)} / 04</text>
+<text x="40" y="34" font-size="20" fill="#0B3B34" font-family="${FONT_SANS}" font-weight="500">${esc(title)}</text>
+<text x="40" y="54" font-size="11" fill="#0B3B34" opacity="0.75" font-family="${FONT_SANS}">${esc(subtitle)}</text>
+<text x="${W - 40}" y="34" font-size="11" fill="#0B3B34" opacity="0.6" text-anchor="end" font-family="${FONT_MONO}">${esc(pageNo)} / 04</text>
 <rect x="40" y="70" width="${W - 80}" height="28" rx="4" fill="${C.panel}" opacity="0.92"/>
-<text x="56" y="88" font-size="11" fill="#0B3B34" font-family="sans-serif" dominant-baseline="central">${note}</text>
+<text x="56" y="88" font-size="11" fill="#0B3B34" font-family="${FONT_SANS}" dominant-baseline="central">${note}</text>
 <rect x="40" y="108" width="760" height="570" rx="4" fill="#DDF7F0" opacity="0.6" stroke="${C.groupStroke}" stroke-width="0.8" stroke-dasharray="5 4"/>`;
 }
 
@@ -241,7 +244,7 @@ function shell(W, H, pageNo, title, subtitle, note) {
 function banner(W, y, text) {
   return `
 <rect x="40" y="${y}" width="${W - 80}" height="30" rx="4" fill="${C.panel}" opacity="0.92"/>
-<text x="${W / 2}" y="${y + 19}" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500" dominant-baseline="central">${esc(text)}</text>`;
+<text x="${W / 2}" y="${y + 19}" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="${FONT_SANS}" font-weight="500" dominant-baseline="central">${esc(text)}</text>`;
 }
 
 /** 组内项目符号列表 */
@@ -249,7 +252,7 @@ function bullets(x, y, items, color, step) {
   const s = step || 17;
   return items.map((t, i) => `
 <circle cx="${x}" cy="${y + i * s}" r="2.6" fill="${color || '#1D9E75'}"/>
-<text x="${x + 10}" y="${y + i * s + 3.5}" font-size="10" fill="${C.gray}" font-family="sans-serif">${esc(t)}</text>`).join('');
+<text x="${x + 10}" y="${y + i * s + 3.5}" font-size="10" fill="${C.gray}" font-family="${FONT_SANS}">${esc(t)}</text>`).join('');
 }
 
 // ============ 图 01：全景与依赖热度 ============
@@ -363,8 +366,8 @@ function overview() {
     '先跑三套测试，比事后补救快。',
   ]);
 
-  b += legend(40, 686, 760, 62);
-  b += banner(W, 756, '改一个文件前先问：它被谁依赖？ 依赖它的必须同步检查吗？');
+  b += legend(40, 680, 760, 70);
+  b += banner(W, 758, '改一个文件前先问：它被谁依赖？ 依赖它的必须同步检查吗？');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${MARKERS}${b}</svg>`;
 }
@@ -411,18 +414,18 @@ function chain() {
   // 说明卡：贴在每段框的右上角空档（框内 y+8），pill 让出 y+20 那一行
   b += `
 <rect x="612" y="146" width="136" height="46" rx="6" fill="${C.panel}" stroke="${C.panelBorder}" stroke-width="0.8"/>
-<text x="622" y="163" font-size="9.5" fill="${C.title}" font-family="sans-serif" font-weight="500">方向锚点</text>
-<text x="622" y="179" font-size="8.5" fill="${C.gray}" font-family="sans-serif">向外 / 向上 / 向内</text>`;
+<text x="622" y="163" font-size="9.5" fill="${C.title}" font-family="${FONT_SANS}" font-weight="500">方向锚点</text>
+<text x="622" y="179" font-size="10" fill="${C.gray}" font-family="${FONT_SANS}">向外 / 向上 / 向内</text>`;
 
   b += `
 <rect x="612" y="374" width="136" height="46" rx="6" fill="#FCEBEB" stroke="#E4B7B7" stroke-width="0.8"/>
-<text x="622" y="391" font-size="9.5" fill="#501313" font-family="sans-serif" font-weight="500">真值表穷举</text>
-<text x="622" y="407" font-size="8.5" fill="${C.gray}" font-family="sans-serif">形式类 100% 确定</text>`;
+<text x="622" y="391" font-size="9.5" fill="#501313" font-family="${FONT_SANS}" font-weight="500">真值表穷举</text>
+<text x="622" y="407" font-size="10" fill="${C.gray}" font-family="${FONT_SANS}">形式类 100% 确定</text>`;
 
   b += `
 <rect x="612" y="540" width="136" height="46" rx="6" fill="#E1F5EE" stroke="#A9D9C8" stroke-width="0.8"/>
-<text x="622" y="557" font-size="9.5" fill="#04342C" font-family="sans-serif" font-weight="500">零采集</text>
-<text x="622" y="573" font-size="8.5" fill="${C.gray}" font-family="sans-serif">无隐私接口声明</text>`;
+<text x="622" y="557" font-size="9.5" fill="#04342C" font-family="${FONT_SANS}" font-weight="500">零采集</text>
+<text x="622" y="573" font-size="10" fill="${C.gray}" font-family="${FONT_SANS}">无隐私接口声明</text>`;
 
   // pill 标签：放在节点卡右侧空档（x=524），不压卡片也不压分组框名
   b += pill(524, 154, '纯本地无上传', 84);
@@ -459,8 +462,8 @@ function chain() {
     'tests/e2e.test.js 边界断言。',
   ]);
 
-  b += legend(40, 686, 760, 62);
-  b += banner(W, 756, '这条链路里 ACT-003 是命门：它一处错，指纹与刻度全部失真。');
+  b += legend(40, 680, 760, 70);
+  b += banner(W, 758, '这条链路里 ACT-003 是命门：它一处错，指纹与刻度全部失真。');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${MARKERS}${b}</svg>`;
 }
@@ -492,17 +495,17 @@ function training() {
   b += group(70, 488, 690, 146, 'RULE-008 · ARG 模式边界 —— 由代码强制');
   b += `
 <rect x="88" y="510" width="310" height="106" rx="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.2"/>
-<text x="104" y="532" font-size="12.5" fill="#04342C" font-family="sans-serif" font-weight="500">ARG 启用</text>
-<text x="104" y="556" font-size="10.5" fill="#0F6E56" font-family="monospace">train     训练层</text>
-<text x="104" y="576" font-size="10.5" fill="#0F6E56" font-family="monospace">monthly   月测</text>
-<text x="104" y="602" font-size="9.5" fill="${C.gray}" font-family="sans-serif">已有足够练习量后，再引入三维评估</text>`;
+<text x="104" y="532" font-size="12.5" fill="#04342C" font-family="${FONT_SANS}" font-weight="500">ARG 启用</text>
+<text x="104" y="556" font-size="10.5" fill="#0F6E56" font-family="${FONT_MONO}">train     训练层</text>
+<text x="104" y="576" font-size="10.5" fill="#0F6E56" font-family="${FONT_MONO}">monthly   月测</text>
+<text x="104" y="602" font-size="9.5" fill="${C.gray}" font-family="${FONT_SANS}">已有足够练习量后，再引入三维评估</text>`;
 
   b += `
 <rect x="422" y="510" width="320" height="106" rx="7" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1.2"/>
-<text x="438" y="532" font-size="12.5" fill="#501313" font-family="sans-serif" font-weight="500">ARG 禁用</text>
-<text x="438" y="556" font-size="10.5" fill="#A32D2D" font-family="monospace">solo      首测</text>
-<text x="438" y="576" font-size="10.5" fill="#A32D2D" font-family="monospace">versus    对攻</text>
-<text x="438" y="602" font-size="9.5" fill="${C.gray}" font-family="sans-serif">首测目标是让用户发现自己不知道</text>`;
+<text x="438" y="532" font-size="12.5" fill="#501313" font-family="${FONT_SANS}" font-weight="500">ARG 禁用</text>
+<text x="438" y="556" font-size="10.5" fill="#A32D2D" font-family="${FONT_MONO}">solo      首测</text>
+<text x="438" y="576" font-size="10.5" fill="#A32D2D" font-family="${FONT_MONO}">versus    对攻</text>
+<text x="438" y="602" font-size="9.5" fill="${C.gray}" font-family="${FONT_SANS}">首测目标是让用户发现自己不知道</text>`;
 
   // 虚线：模式 → ARG 边界判定框（模式 3 的说明已足够，不再引出第三条）
   b += dash(140, 372, 140, 488);
@@ -542,8 +545,8 @@ function training() {
     '首测保持 15 维单选。',
   ]);
 
-  b += legend(40, 686, 760, 62);
-  b += banner(W, 756, '约束不是一句话：每条都要有一个测试在拦它，否则只是愿望。');
+  b += legend(40, 680, 760, 70);
+  b += banner(W, 758, '约束不是一句话：每条都要有一个测试在拦它，否则只是愿望。');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${MARKERS}${b}</svg>`;
 }
@@ -556,14 +559,14 @@ function replica() {
 
   // ---- 标题区 ----
   b += `
-<text x="40" y="34" font-size="20" fill="#0B3B34" font-family="sans-serif" font-weight="500">《破招》功能逻辑地图</text>
-<text x="40" y="54" font-size="11" fill="#0B3B34" opacity="0.75" font-family="sans-serif">用一套编号体系整理成 Markdown 关系图 —— 让 AI 看懂每个功能的上下游关系</text>
-<text x="1080" y="34" font-size="11" fill="#0B3B34" opacity="0.6" text-anchor="end" font-family="monospace">05 / 05</text>`;
+<text x="40" y="34" font-size="20" fill="#0B3B34" font-family="${FONT_SANS}" font-weight="500">《破招》功能逻辑地图</text>
+<text x="40" y="54" font-size="11" fill="#0B3B34" opacity="0.75" font-family="${FONT_SANS}">用一套编号体系整理成 Markdown 关系图 —— 让 AI 看懂每个功能的上下游关系</text>
+<text x="1080" y="34" font-size="11" fill="#0B3B34" opacity="0.6" text-anchor="end" font-family="${FONT_MONO}">05 / 05</text>`;
 
   // ---- 顶部说明条 ----
   b += `
 <rect x="40" y="70" width="1040" height="28" rx="4" fill="${C.panel}" opacity="0.92"/>
-<text x="56" y="88" font-size="11" fill="#0B3B34" font-family="sans-serif" dominant-baseline="central"><tspan font-weight="500">逻辑地图</tspan> = 把小程序里的能力、页面、按钮、动作、流程、数据、接口、规则、测试，用一套编号体系整理成 Markdown 关系图。</text>`;
+<text x="56" y="88" font-size="11" fill="#0B3B34" font-family="${FONT_SANS}" dominant-baseline="central"><tspan font-weight="500">逻辑地图</tspan> = 把小程序里的能力、页面、按钮、动作、流程、数据、接口、规则、测试，用一套编号体系整理成 Markdown 关系图。</text>`;
 
   // ---- 主图区背景 ----
   b += `<rect x="40" y="108" width="760" height="570" rx="4" fill="#DDF7F0" opacity="0.6" stroke="${C.groupStroke}" stroke-width="0.8" stroke-dasharray="5 4"/>`;
@@ -689,7 +692,7 @@ function replica() {
   // ================= 底部横幅 =================
   b += `
 <rect x="40" y="760" width="1040" height="30" rx="4" fill="${C.panel}" opacity="0.92"/>
-<text x="560" y="779" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="sans-serif" font-weight="500" dominant-baseline="central">让 AI 改代码前先回答：改什么？ 影响哪里？ 不能动什么？ 怎么验证？</text>`;
+<text x="560" y="779" font-size="13" fill="#0B3B34" text-anchor="middle" font-family="${FONT_SANS}" font-weight="500" dominant-baseline="central">让 AI 改代码前先回答：改什么？ 影响哪里？ 不能动什么？ 怎么验证？</text>`;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${MARKERS}${b}</svg>`;
 }

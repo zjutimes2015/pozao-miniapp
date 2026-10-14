@@ -21,7 +21,16 @@
 
 **图例约定**：实线 = 主数据流或直接调用；虚线 = 跨层约束或间接依赖。
 
-重新生成：`node tools/gen-map-diagrams.js`（内置节点 ID 一致性自检）
+**清晰度**：PNG 均为 **2240 × 1600**（2× 密度，逻辑画布 1120 × 800），
+在任何高分屏下1:1 像素对应；最小字号 9.5，中文字体栈显式声明。
+
+重新生成与渲染：
+
+```bash
+node tools/gen-map-diagrams.js                    # 生成 SVG + 内置 ID 自检
+node tools/render-diagrams.js                    # 打印渲染命令
+node tools/render-diagrams.js --exec             # 尝试直接渲染
+```
 
 ---
 
